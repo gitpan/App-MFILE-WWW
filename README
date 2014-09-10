@@ -1,0 +1,146 @@
+NAME
+    App::MFILE::WWW - generic web front-end with demo app
+
+VERSION
+    Version 0.079
+
+LICENSE
+    This software is distributed under the "BSD 3-Clause" license, the text
+    of which can be found in the file named `COPYING' in the top-level
+    distro directory. The license text is also reprodued at the top of each
+    source file.
+
+DESCRIPTION
+    This distro contains a generic framework for developing web front-ends
+    to REST resources. The framework includes a web server (based on Plack
+    and Web::Machine), CSS and HTML for the "frame" where the application
+    displays its screens, and "widgets" for defining the application's login
+    dialog, menus, forms, and actions.
+
+    For illustration, the distro contains a demo app that works with
+    App::Dochazka::REST.
+
+INTRODUCTION
+    The full stack, of which App::MFILE::WWW is a part, consists of the
+    following components:
+
+    * Database engine
+        For storing application data.
+
+    * Perl DBI
+        For interfacing between the Perl code and the database engine.
+
+    * REST server
+        A REST server, such as App::Dochazka::REST, implements a data model
+        and provides a HTTP interface to that model.
+
+    * optional CLI client/frontend
+        An optional Command Line Interface (frontend) can provide a command
+        line interface to the REST server.
+
+    * WWW client/frontend
+        The WWW frontend, based on this distro, is a web server that serves
+        HTML, CSS, and JavaScript code to users for a menu-driven "browser
+        experience" of the application.
+
+    Conceptually, the clients act as proxies between the user and the REST
+    server. Taking this one step further, the REST server itself is a proxy
+    between the client and the database engine.
+
+    The philosophy behind this design is that you, the user, have the
+    freedom and the flexibility to write your own client, on any platform,
+    in any language -- however you see fit.
+
+MAJOR COMPONENTS
+    The web frontend is implemented using the following technologies:
+
+    * Perl - server-side code
+    * nginx - reverse proxy (optional)
+    * HTTP::Server::PSGI, Starman, or other PSGI-compatible HTTP server
+    * Plack - interface with HTTP server
+    * Web::Machine - HTTP request/response cycle
+    * App::MFILE::WWW::Resource - overlays Web::Machine::Resource
+    * HTML and CSS code served to the user's browser
+    * JavaScript code served to and running in the user's browser
+    * AJAX calls from the JavaScript code back to the web server, which
+    forwards them to the REST server and sends the results back to the
+    JavaScript side - see the next section for details
+
+  Request-response cycle
+    A more detailed description of the request-response cycle implemented by
+    App::MFILE::WWW:
+
+    * nginx listens for incoming connections on port 80/443 of the server
+    * When a connection comes in, nginx decrypts it and forwards it to a
+    high-numbered port where Starman is listening
+    * Starman takes the connection and passes it to the Plack middleware
+    * the key middleware component is Plack::Middleware::Session, which
+    assigns an ID to the session, maintains whatever data the server-side
+    code needs to associate with the session, links the session to the
+    user's browser via a cookie, and provides the application a hook (in the
+    Plack environment that is included in the HTTP request) to access the
+    session data
+    * if the connection is asking for static content (defined as anything in
+    `images/', `css/', or `js/'), Plack and Starman serve that content
+    immediately and the request doesn't even make it into our code
+    * any other path is considered dynamic content and is passed to
+    Web::Machine for processing -- Web::Machine implements the HTTP standard
+    as a state machine
+    * the Web::Machine state machine takes the incoming request and runs it
+    through several functions that are implemented in
+    App::MFILE::WWW::Resource -- for example, 'malformed_request' examines
+    the request body, if any, and if it is not valid JSON, the HTTP server
+    returns '400 Malformed Request'
+    * as part of the state machine, all incoming requests are subject to
+    "authorization" (in the HTTP sense), which actually means
+    authentication. First, the session data is examined to determine if the
+    request belongs to an authorized session. If it doesn't, the request is
+    treated as a login/logout attempt.
+    * once an authorized session is established, there are two types of
+    requests: GET and POST
+    * incoming GET requests can happen when the page is reloaded - in an
+    authorized session, this causes the main menu to be displayed.
+    JavaScript form buffers and other data structures are reset to their
+    default values. Note that App::MFILE::WWW pays no attention to the URI -
+    if the user enters a path (e.g. http://mfile.site/some/bogus/path), this
+    will be treated like any other page reload.
+    * if the session is expired or invalid, any incoming GET request will
+    cause the login dialog to be displayed.
+    * well-formed POST requests are assumed to be AJAX calls and are
+    processed by the `process_post' routine. First, the request body is
+    examined. The request body of all AJAX calls must adhere to a simple
+    structure:
+            { method: "GET", path: "employee/current", body: { ... } }
+
+        where 'method' is either GET or POST, 'path' is the path to the REST
+        server resource being requested, and 'body' is the request body to
+        be forwarded to the REST server. Provided the request is properly
+        authorized and the body is well-formed, the request is forwarded to
+        the REST server and the REST server's response is sent back to the
+        user's browser, where it is processed by the JavaScript code.
+
+    * under ordinary operation, the user will spend 99% of her time
+    interacting with the JavaScript code running in her browser, which will
+    communicate asynchronously with the REST server via AJAX calls as
+    described above.
+
+  Development notes
+    UTF-8
+    In conformance with the JSON standard, all data passing to and from the
+    server are assumed to be encoded in UTF-8. Users who need to use
+    non-ASCII characters should check their browser's settings.
+
+  Deployment
+    To minimize latency, App::MFILE::WWW can be deployed on the same server
+    as the back-end (e.g. App::Dochazka::REST), but this is not required.
+
+PACKAGE VARIABLES
+    For convenience, the following variables are declared with package
+    scope:
+
+FUNCTIONS
+  init
+    Initialization routine - runs when the server is started. Loads
+    configuration files from the distro and site configuration directories,
+    and sets up logging.
+

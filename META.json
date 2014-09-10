@@ -1,0 +1,71 @@
+{
+   "abstract" : "generic web front-end with demo app",
+   "author" : [
+      "Nathan Cutler <ncutler@suse.cz>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.4005, CPAN::Meta::Converter version 2.141170",
+   "license" : [
+      "bsd"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "App-MFILE-WWW",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "App::CELL" : "0.194",
+            "App::MFILE" : "0.17",
+            "HTTP::Request" : "0",
+            "Plack::Session" : "0",
+            "Plack::Test" : "0",
+            "Scalar::Util" : "0",
+            "Test::Fatal" : "0",
+            "Test::JSON" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "App::CELL" : "0.194",
+            "App::MFILE" : "0.17",
+            "Data::Structure::Util" : "0",
+            "File::ShareDir" : "1.00",
+            "JSON" : "0",
+            "Params::Validate" : "1.06",
+            "Plack::Middleware::Session" : "0",
+            "Plack::Middleware::StackTrace" : "0",
+            "Plack::Middleware::Static" : "0",
+            "Plack::Runner" : "0",
+            "Plack::Session" : "0",
+            "Scalar::Util" : "0",
+            "Try::Tiny" : "0",
+            "Web::Machine" : "0.15",
+            "perl" : "5.012"
+         }
+      }
+   },
+   "provides" : {
+      "App::MFILE::WWW" : {
+         "file" : "lib/App/MFILE/WWW.pm",
+         "version" : "0.079"
+      },
+      "App::MFILE::WWW::Resource" : {
+         "file" : "lib/App/MFILE/WWW/Resource.pm",
+         "version" : "0.079"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://opensource.org/licenses/BSD-3-Clause"
+      ]
+   },
+   "version" : "0.079"
+}

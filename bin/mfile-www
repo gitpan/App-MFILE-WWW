@@ -1,0 +1,119 @@
+#!/usr/bin/perl
+# ************************************************************************* 
+# Copyright (c) 2014, SUSE LLC
+# 
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
+# 
+# 3. Neither the name of SUSE LLC nor the names of its contributors may be
+# used to endorse or promote products derived from this software without
+# specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+# ************************************************************************* 
+#
+# App::MFILE::WWW server executable
+#
+# -------------------------------------------------------------------------
+
+use 5.014;
+use strict;
+use warnings;
+
+#use App::CELL::Test::LogToFile # uncomment this line to debug initialization
+use App::CELL qw( $site );
+use App::MFILE::WWW;
+use File::ShareDir;
+use Plack::Builder;
+use Plack::Runner;
+use Web::Machine;
+ 
+=head1 NAME
+
+mfile-www - App::MFILE::WWW server startup script
+
+
+
+=head1 VERSION
+
+Version 0.079
+
+=cut
+
+our $VERSION = '0.079';
+
+
+
+=head1 SYNOPSIS
+
+    $ mfile-www
+
+
+
+=head1 STATIC FILES
+
+Here we define directories for serving static files
+
+=cut
+
+my $dist_dir = File::ShareDir::dist_dir( 'App-MFILE-WWW' ); 
+
+
+
+    
+=head1 DESCRIPTION
+
+Run this script from the bash prompt to start the server.
+
+=cut
+
+print "App::MFILE::WWW ver. $VERSION\n";
+
+print "Initializing\n";
+my $status = App::MFILE::WWW::init( sitedir => '/etc/mfile-www', debug_mode => 1 );
+die "\n" . $status->text unless $status->ok;
+
+print "Log messages will be written to " . $site->MFILE_WWW_LOG_FILE .  "\n";
+
+print "JS and CSS files will be served from $dist_dir\n";
+
+print "Starting server\n";
+
+my $runner = Plack::Runner->new;
+
+# FIXME: parse @ARGV looking for 'host' and 'port' - if both are present, fine.
+# If only one is present, error exit. If neither are present, default to
+# MFILE_WWW_HOST and MFILE_WWW_PORT
+
+push @ARGV, ('--port=5001', '--reload');
+
+$runner->parse_options(@ARGV);
+
+$runner->run( 
+    builder {
+        enable "StackTrace", force => 1;
+        enable "Session";
+        enable "Static", path => qr{^/(js|css)/}, root => $dist_dir;
+        Web::Machine->new( resource => 'App::MFILE::WWW::Resource', )->to_app;
+    }
+);
+
