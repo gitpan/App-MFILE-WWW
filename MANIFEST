@@ -31,8 +31,13 @@ share/js/lib.js
 share/js/login-dialog.js
 share/js/logout.js
 share/js/main.js
+share/js/mfile-www/daction.js
+share/js/mfile-www/dform.js
+share/js/mfile-www/target-init.js
 share/js/prototypes.js
 share/js/require.js
+share/js/staging/demoMenu
+share/js/target.js
 share/js/test.js
 t/00-load.t
 t/boilerplate.t

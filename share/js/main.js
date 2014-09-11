@@ -43,21 +43,20 @@ define ([
     'jquery',
     'current-user',
     'dmenu',
-    'init/dmenu-source-start',
-    'init/dform-source-start',
     'html', 
-    'login-dialog', 
-    'prototypes'
+    'login-dialog',
+    'app/dmenu',
+    'init/dmenu-source-start',
+    'init/dform-source-start'
 ], function (
     $,
     currentUser,
     dmenu,
-    dmenuSourceStart,
-    dformSourceStart,
     html, 
-    loginDialog, 
-    mainMenu,
-    prototypes
+    loginDialog,
+    XXX,
+    YYY,
+    ZZZ
 ) {
 
     var dummy = Object.create(null);

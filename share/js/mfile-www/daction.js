@@ -30,36 +30,31 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// current-user.js - initialize and store currentUser object
+// mfile-www/daction.js
 //
-// The currentUser object looks like this:
-// {
-//     'obj': currentUser object defined in 'module.config' (see Resource.pm)
-//     'priv': currentUserPriv string defined in 'module.config'
-// }
+// daction definitions
+//
 "use strict";
 
 define ([
-    'jquery', 
-    'cf', 
-    'prototypes'
+    "jquery",
+    "logout"
 ], function (
-    $, 
-    cf,
-    prototypes
+    $,
+    logout
 ) {
-
-    var cu = Object.create(prototypes.user),
-        ce = cf('currentUser'),
-        priv = cf('currentUserPriv') || 'passerby';
-
-    if (ce) {
-        $.extend(cu, ce)
-    }
-    console.log('Current user is ', cu);
-    return { 
-        'obj': cu,
-        'priv': priv,
+    var do = {
+            "sampleAction": function () {
+                $('#mainarea').html('<br><br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>');
+                setTimeout(function () { location.reload(); }, 1500);
+            },
+            "logout": logout
+        };
+   
+    return function (a) {
+        if (do.hasOwnProperty(a)) {
+            return do[a];
+        }
+        return undefined;
     };
-
 });

@@ -1,0 +1,9 @@
+        // your app/dmenu should construct dmenu objects like this,
+        // and add them to the object returned by this module
+
+        demoMenu: lib.dmenuConstructor({
+            'name': 'demoMenu',
+            'menuText': 'Demo menu',
+            'title': 'Demo menu',
+            'aclProfile': 'passerby',
+        })

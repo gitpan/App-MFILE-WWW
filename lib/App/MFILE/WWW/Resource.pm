@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.079
+Version 0.088
 
 =cut
 
-our $VERSION = '0.079';
+our $VERSION = '0.088';
 
 
 
@@ -564,7 +564,10 @@ sub init_session {
 
 =head3 gen_html
 
-Takes the session object and returns HTML string
+Takes the session object and returns HTML string to be displayed in the user's
+browser.
+
+FIXME: might be worth spinning this off into a separate module.
 
 =cut
 

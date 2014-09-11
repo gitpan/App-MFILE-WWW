@@ -32,6 +32,8 @@
 //
 // logout.js
 //
+// function to log out the user
+//
 "use strict";
 
 define(['jquery', 'ajax', 'cf'], function ($, ajax) {

@@ -30,59 +30,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// dform.js
+// dform.js - storage for dforms
 //
 
 "use strict";
 
-define ([
-    'daction',
-    'dmenu',
-    'lib'
-], function (
-    daction,
-    dmenu,
-    lib
-) {
-    var entries = {        
-
-        // read-only form entry no. 1
-        'ROFormEntry1': {
-            name: 'ROFormEntry1',
-            aclProfileRead: 'passerby',
-            aclProfileWrite: null,
-            text: 'RO Entry 1',
-            prop: 'roentry1',
-            maxlen: 20
-        },
-    
-        // read-write form entry no. 1
-        'RWFormEntry1': {
-            name: 'RWFormEntry1',
-            aclProfileRead: 'passerby',
-            aclProfileWrite: 'passerby',
-            text: 'RW Entry 1',
-            prop: 'rwentry1',
-            maxlen: 20
-        }
-
-    };
-    return {
-        demoForm: lib.dformConstructor({
-            'name': 'demoForm',
-            'menuText': 'Demonstrate simple forms',
-            'title': 'Demo form',
-            'preamble': 'This is just an illustration',
-            'aclProfile': 'passerby',
-            'entriesRead': [ entries.ROFormEntry1 ],
-            'entriesWrite': [ entries.RWFormEntry1 ],
-            'hookGetObj': function () {
-                return {
-                    roentry1: 'Some information here',
-                    rwentry1: null
-                };
-            }
-        })
-    };
-});
-
+define ([], {});

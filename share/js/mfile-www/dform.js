@@ -30,36 +30,62 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// current-user.js - initialize and store currentUser object
+// app/dform.js
 //
-// The currentUser object looks like this:
-// {
-//     'obj': currentUser object defined in 'module.config' (see Resource.pm)
-//     'priv': currentUserPriv string defined in 'module.config'
-// }
+
 "use strict";
 
 define ([
-    'jquery', 
-    'cf', 
-    'prototypes'
+    'daction',
+    'dmenu',
+    'lib'
 ], function (
-    $, 
-    cf,
-    prototypes
+    daction,
+    dmenu,
+    lib
 ) {
 
-    var cu = Object.create(prototypes.user),
-        ce = cf('currentUser'),
-        priv = cf('currentUserPriv') || 'passerby';
+    var dummy = Object.create(null),
+        entries = {        
 
-    if (ce) {
-        $.extend(cu, ce)
-    }
-    console.log('Current user is ', cu);
-    return { 
-        'obj': cu,
-        'priv': priv,
-    };
+            // read-only form entry no. 1
+            'ROFormEntry1': {
+                name: 'ROFormEntry1',
+                aclProfileRead: 'passerby',
+                aclProfileWrite: null,
+                text: 'RO Entry 1',
+                prop: 'roentry1',
+                maxlen: 20
+            },
+
+            // read-write form entry no. 1
+            'RWFormEntry1': {
+                name: 'RWFormEntry1',
+                aclProfileRead: 'passerby',
+                aclProfileWrite: 'passerby',
+                text: 'RW Entry 1',
+                prop: 'rwentry1',
+                maxlen: 20
+            }
+
+        };
+
+    dform.demoForm = lib.dformConstructor({
+        'name': 'demoForm',
+        'menuText': 'Demonstrate simple forms',
+        'title': 'Demo form',
+        'preamble': 'This is just an illustration',
+        'aclProfile': 'passerby',
+        'entriesRead': [ entries.ROFormEntry1 ],
+        'entriesWrite': [ entries.RWFormEntry1 ],
+        'hookGetObj': function () {
+            return {
+                roentry1: 'Some information here',
+                rwentry1: null
+            };
+        }
+    });
+
+    return dummy;
 
 });

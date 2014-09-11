@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use Test::More;
 
 BEGIN {
-    use_ok( 'App::Dochazka::WWW' ) || print "Bail out!\n";
+    use_ok( 'App::MFILE::WWW' ) || print "Bail out!\n";
 }
 
 done_testing;

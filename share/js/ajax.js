@@ -32,6 +32,21 @@
 //
 // ajax.js
 //
+// provides a function that sends AJAX requests to the App::MFILE::WWW server
+// (which forwards them to the REST server) and takes action based on the
+// result.
+//
+// The 'ajax' function takes three arguments:
+// - MFILE AJAX Object (an object)
+// - success callback (a function, can be null or undefined)
+// - failure callback (a function, can be null or undefined)
+//
+// The MFILE AJAX Object looks like this:
+// {
+//     "method": any HTTP method accepted by the REST server, or 'LOGIN'
+//     "path": valid path to REST server resource, or 'login'/'logout'
+//     "body": content body to be sent to REST server, or login credentials
+// }
 "use strict";
 
 define(['jquery'], function ($) {
@@ -51,17 +66,18 @@ define(['jquery'], function ($) {
         .done(function (data) {
             console.log("AJAX call returned ", data);
             if (data.level === 'OK') {
-                if (scb === null) {
-                    $('#result').html(data.text);
-                } else {
+                console.log("AJAX call success:", data);
+                if (scb) {
                     scb(data);
+                } else {
+                    $('#result').html(data.text);
                 }
             } else {
-                if (fcb === null) {
-                    $('#result').html(data.text);
-                } else {
-                    console.log("AJAX call failure:", data);
+                console.log("AJAX call failure:", data);
+                if (fcb) {
                     fcb(data);
+                } else {
+                    $('#result').html(data.text);
                 }
             }
         });

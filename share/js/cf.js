@@ -32,10 +32,15 @@
 //
 // cf.js
 //
-// Makes configuration parameters passed in from Perl side available to
-// JavaScript modules that need them. Also provides a way to override these
-// parameters with new values. Note, however, that overrides will survive
-// only until the next page reload, which can happen at any time.
+// provides a function that makes configuration parameters passed in from Perl
+// side available to JavaScript modules that need them. Also provides a way to
+// override these parameters with new values. Note, however, that overrides
+// will survive only until the next page reload, which can happen at any time.
+//
+// The 'cf' function takes two parameters:
+// - parameter name (as defined in 'module.config' - see Resource.pm->gen_html)
+// - optionally, a new value for the parameter, which will override the
+//   old value until the next page reload
 //
 "use strict";
 

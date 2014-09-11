@@ -34,7 +34,13 @@
 //
 "use strict";
 
-define(['cf'], function (cf) {
+define ([
+    'cf',
+    'current-user'
+], function (
+    cf,
+    currentUser
+) {
     return {
         loginDialog: function () {
             var r = '';
@@ -60,20 +66,22 @@ define(['cf'], function (cf) {
         },
         body: function () {
             var r = '',
-                ce = cf('currentEmployee'),
-                nickToDisplay = (ce && ce.hasOwnProperty('nick') && ce.nick !== undefined)
-                    ? ce.nick
-                    : '&lt;NONE&gt;';
+                cunick = currentUser.obj.nick || null,
+                cupriv = currentUser.priv || 'passerby',
+                nickToDisplay = cunick ? currentUser.obj.nick : '&lt;NONE&gt;';
             
-            r += '<div class="abovebox" id="title">';
-            r += '    <div class="subbox" style="font-size: 24px; width: 180px">';
-            r += '        <strong>' + cf('appName') + '</strong>';
-            r += '    </div>';
-            r += '    <div class="subbox" id="versionbox" style="width: 50px">' + cf('appVersion') + '</div>';
-            r += '    <div class="subbox" id="userbox" style="width: 640px; text-align: right">';
-            r += "Employee: " + nickToDisplay + "</div>";
+            r += '<div class="abovebox">';
+            r += '<p class="alignleft"><span style="font-size: 24px">';
+            r += '<strong>' + cf('appName') + '</strong></span>';
+            r += '&nbsp;' + cf('appVersion') + '</p>';
+            r += '<p class="alignright">Employee: ' + nickToDisplay;
+            if (cupriv === 'admin') {
+                r += '&nbsp;ADMIN';
+            }
+            r += '</p>';
+            r += '</div>';
 
-            r += '<div class="boxbot" id="header">';
+            r += '<div class="boxbot" id="header" style="clear: both;">';
             r += '   <span class="subbox" id="topmesg">If application appears';
             r += '   unresponsive, make sure browser window is active and press \'TAB\'</span>';
             r += '</div>';

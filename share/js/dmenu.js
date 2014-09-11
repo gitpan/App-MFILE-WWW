@@ -35,13 +35,15 @@
 // A 'dmenu' is a simple menu that is dynamically generated at runtime.
 //
 // dmenus are initialized in several rounds -- this module being the first.
-// It creates the dmenu module object and populates it with a "core" dmenu,
+// It creates the dmenu module object. and populates it with a "core" dmenu,
 // called 'demoMenu'. At this point, the demoMenu object is incomplete: it
 // is missing 'source', 'start', 'entries', and 'back' properties.
 //
 // The second round of initialization is the application's dmenu routine,
 // (app/dmenu), which adds its own application-specific set of (incomplete)
-// dmenus to this object.
+// dmenus to this object. The location of the 'app' directory is configurable.
+// If it is not set, it defaults to 'share/js/app' of this distro, where a
+// 'demoMenu' object is created.
 //
 // In the third round, which can only take place after all daction and
 // dform objects have been initialized, the 'entries' and 'back' properties
@@ -59,23 +61,4 @@
 
 "use strict";
 
-define ([
-    'lib'
-], function (
-    lib
-) {
-
-    return {
-
-        // your app/dmenu should construct dmenu objects like this,
-        // and add them to the object returned by this module
-
-        demoMenu: lib.dmenuConstructor({
-            'name': 'demoMenu',
-            'menuText': 'Demo menu',
-            'title': 'Demo menu',
-            'aclProfile': 'passerby',
-        })
-    };
-
-});
+define ([], {});

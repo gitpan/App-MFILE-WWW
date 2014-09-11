@@ -1,4 +1,7 @@
-Revision history for App::Dochazka::WWW
+Revision history for App::MFILE::WWW
+
+*** N.B.: for versions 0.001-0.078 the distro was known as App::Dochazka:WWW on
+    CPAN and the code was included in the 'dochazka' project on SourceForge
 
 0.001  2014-08-11 17:22 CEST
 - establish App::Dochazka::WWW on a green field (more or less)
@@ -527,5 +530,36 @@ Revision history for App::Dochazka::WWW
 - js/main.js: initialize dforms by requiring init/dform-source-start
 
 0.079  2014-09-10 15:22 CEST
+- migration to RequireJS complete
 - rename to App::MFILE::WWW
+
+0.080  2014-09-10 16:14 CEST
+- hack css
+
+0.081  2014-09-10 17:22 CEST
+- js/html.js: iff currentUser is an admin, display 'ADMIN' next to her nick
+
+0.082  2014-09-10 17:48 CEST
+- WWW.pm: massage POD
+
+0.083  2014-09-10 17:59 CEST
+- js/ajax.js: cleanup and document
+
+0.084  2014-09-10 18:02 CEST
+- js/cf.js: cleanup and improve in-line documentation
+
+0.085  2014-09-10 18:08 CEST
+- js/current-user.js: cleanup; improve in-line documentation
+
+0.086  2014-09-11 09:31 CEST
+- js/: the way I was attempting to initialize the dmenu, dform, and daction
+  objects was subject to race conditions, so I came up with a different system
+  (storage of all targets in a single module, target.js) and started to
+  implement it (WIP)
+
+0.087  2014-09-11 09:55 CEST
+- fix bugs in MANIFEST and t/00-load.t
+
+0.088  2014-09-11 10:00 CEST
+- Build.PL: update dependencies
 

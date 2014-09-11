@@ -1,5 +1,5 @@
 ---
-abstract: 'generic web front-end with demo app'
+abstract: 'Generic web front-end with demo app'
 author:
   - 'Nathan Cutler <ncutler@suse.cz>'
 build_requires:
@@ -23,17 +23,19 @@ name: App-MFILE-WWW
 provides:
   App::MFILE::WWW:
     file: lib/App/MFILE/WWW.pm
-    version: '0.079'
+    version: '0.088'
   App::MFILE::WWW::Resource:
     file: lib/App/MFILE/WWW/Resource.pm
-    version: '0.079'
+    version: '0.088'
 requires:
   App::CELL: '0.194'
   App::MFILE: '0.17'
-  Data::Structure::Util: '0'
   File::ShareDir: '1.00'
   JSON: '0'
+  LWP::UserAgent: '0'
+  Log::Any::Adapter: '0'
   Params::Validate: '1.06'
+  Plack::Builder: '0'
   Plack::Middleware::Session: '0'
   Plack::Middleware::StackTrace: '0'
   Plack::Middleware::Static: '0'
@@ -45,4 +47,4 @@ requires:
   perl: '5.012'
 resources:
   license: http://opensource.org/licenses/BSD-3-Clause
-version: '0.079'
+version: '0.088'
