@@ -35,11 +35,11 @@
 "use strict";
 
 define ([
-           'current-user',
-           'prototypes'
+    'current-user',
+    'prototypes'
 ], function (
-           currentUser,
-           prototypes
+    currentUser,
+    prototypes
 ) {
 
     return {

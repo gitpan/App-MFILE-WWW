@@ -36,7 +36,13 @@
 //
 "use strict";
 
-define(['jquery', 'ajax', 'cf'], function ($, ajax) {
+define([
+    'jquery', 
+    'ajax'
+], function (
+    $, 
+    ajax
+) {
     return function () {
         var logoutSource = function () {
                 var r;

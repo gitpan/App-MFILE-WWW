@@ -30,30 +30,33 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// init/dmenu-entries-back
+// app/dmenu.js
 //
-// add 'entries' and 'back' properties to core dmenu objects
+// Round one of dmenu initialization - called from app/target-init.js
 //
 "use strict";
 
 define ([
-    'daction',
-    'dform',
-    'dmenu'
+    'target'
 ], function (
-    daction,
-    dform,
-    dmenu
+    target
 ) {
 
-    var dummy = Object.create(null);
+    return function () {
 
-    dmenu.demoMenu.entries = [
-        daction.sampleAction,
-        dform.demoForm
-    ];
-    dmenu.demoMenu.back = daction.logout;
+        //
+        // dmenus, round one
+        //
+        target.push('demoMenu', {
+            'name': 'demoMenu',
+            'type': 'dmenu',
+            'menuText': 'Demo menu',
+            'title': 'Demo menu',
+            'aclProfile': 'passerby',
+            'entries': ['sampleAction', 'demoForm'],
+            'back': 'logout'
+        });
 
-    return dummy;
+    };
 
 });

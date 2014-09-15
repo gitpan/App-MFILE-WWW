@@ -30,28 +30,40 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// init/dform-menu
+// app/daction.js
 //
-// add 'menu' property to core dform objects
+// Round one of daction initialization - called from app/target-init.js
 //
+"use strict";
 
 define ([
-    'daction',
-    'dform',
-    'dmenu'
+    'target',
+    'app/daction-start',
 ], function (
-    daction,
-    dform,
-    dmenu
+    target,
+    dactionStart
 ) {
 
-    var dummy = Object.create(null);
+    return function () {
 
-    dform.demoForm.menu = {
-        entries: [ daction.sampleAction ],
-        back: ['Back', dmenu.demoMenu ]
+        //
+        // dactions, round one
+        //
+        target.push('sampleAction', {
+            'name': 'sampleAction',
+            'type': 'daction',
+            'menuText': 'Do something',
+            'aclProfile': 'passerby',
+            'start': dactionStart('sampleAction')
+        }),
+        target.push('logout', {
+            'name': 'logout',
+            'type': 'daction',
+            'menuText': 'Logout',
+            'aclProfile': 'passerby',
+            'start': dactionStart('logout')
+        })
+
     };
-
-    return dummy;
 
 });

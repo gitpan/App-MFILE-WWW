@@ -61,7 +61,7 @@ define ([
         //
         // object for storing targets
         //
-        _store = Object.create(null),
+        _store = {},
         //
         // function for retrieving a single target by name
         //
@@ -79,8 +79,8 @@ define ([
                 i;
             for (i in _store) {
                 if (_store.hasOwnProperty(i)) {
-                    // i is a target
-                    if (i.type === tt) {
+                    // _store[i] is a target
+                    if (_store[i].type === tt) {
                         buffer[i] = _store[i];
                     }
                 }

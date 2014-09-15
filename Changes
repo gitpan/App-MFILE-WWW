@@ -552,14 +552,69 @@ Revision history for App::MFILE::WWW
 - js/current-user.js: cleanup; improve in-line documentation
 
 0.086  2014-09-11 09:31 CEST
-- js/: the way I was attempting to initialize the dmenu, dform, and daction
-  objects was subject to race conditions, so I came up with a different system
-  (storage of all targets in a single module, target.js) and started to
-  implement it (WIP)
+- js/: {dmenu,dform,daction} object initialization was subject to race
+  conditions, so had to be redesigned - the new system treats all three
+  types of objects as instances of a single type "target" and all targets
+  are stored in a single module, target.js, and initialized in
+  app/target-init.js
 
 0.087  2014-09-11 09:55 CEST
 - fix bugs in MANIFEST and t/00-load.t
 
 0.088  2014-09-11 10:00 CEST
 - Build.PL: update dependencies
+
+0.089  2014-09-11 11:49 CEST
+- js/mfile-www/daction-start.js: single source for daction start methods
+- js/mfile-www/{daction,dform,dmenu}-init.js: each target type has its 
+  own method for initialization round one
+- js/mfile-www/target-init.js: function that initializes all targets
+  (called from main.js)
+- js/main.js: adapt to new targets system
+- js/init/{dmenu,dform}-source-start.js: (target init round two) adapt to
+  new targets system
+
+0.090  2014-09-11 12:25 CEST
+- js/: fix lots of bugs introduced by the last refactor
+
+0.091  2014-09-11 14:46 CEST
+- add unit testing infrastructure
+- Resource.pm: adapt for QUnit (URLs containing 'test' will cause unit
+  tests to be run); rename 'gen_html' to 'main_html'; new '_require_js'
+  generates shared RequireJS HTML code
+- js/: set up QUnit with a single "dummy test"; move require.js to libs/;
+  add 'test.js' unit testing script and 'tests/' directory for unit tests
+
+0.092  2014-09-11 16:12 CEST
+- js/tests: implement 'cf' test, start work on 'current-user' test
+- Resource.pm: fix first bug uncovered by the new unit tests
+
+0.093  2014-09-11 21:42 CEST
+- js/: add a few unit tests
+
+0.094  2014-09-12 10:28 CEST
+- add more unit tests
+
+0.095  2014-09-12 16:46 CEST
+- Build.PL: add 'Getopt::Long' dependency
+- bin/mfile-www: start refactoring startup script to work in two
+  different modes: "standalone operation" and "derived distro"
+- WWW.pm: write POD on the new operating modes
+- WWW_Config.pm: change default location of logfile to $HOME/.mfile-www.log 
+  to increase probability of it being user-writable
+
+0.096  2014-09-12 18:00 CEST
+- bin/mfile-www: start extending the script to handle "standalone" and "derived
+  distro" modes
+- WWW.pm: fix some errors in the new POD
+
+0.097  2014-09-15 21:38 CEST
+- js/: move all core JS files to js/core 
+- bin/mfile-www: start refactoring startup script to support "standalone"
+  and "derived distribution" modes
+- Resource.pm: more annotation of the JavaScript initialization code
+- config/WWW_Config.pm: add config parameters that will be needed for
+  "standalone" and "derived distribution" modes
+- t/pod-coverage.t: fix typo in test that was causing it to fail on one
+  platform
 

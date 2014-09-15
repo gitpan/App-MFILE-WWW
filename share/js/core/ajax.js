@@ -30,49 +30,60 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// main.js
+// ajax.js
 //
-// Entry point to JavaScript side; displays the application frame in the
-// browser window and passes off control either to the login dialog or 
-// the main menu, depending on what session data is passed in from the
-// Perl side
+// provides a function that sends AJAX requests to the App::MFILE::WWW server
+// (which forwards them to the REST server) and takes action based on the
+// result.
 //
+// The 'ajax' function takes three arguments:
+// - MFILE AJAX Object (an object)
+// - success callback (a function, can be null or undefined)
+// - failure callback (a function, can be null or undefined)
+//
+// The MFILE AJAX Object looks like this:
+// {
+//     "method": any HTTP method accepted by the REST server, or 'LOGIN'
+//     "path": valid path to REST server resource, or 'login'/'logout'
+//     "body": content body to be sent to REST server, or login credentials
+// }
 "use strict";
 
 define ([
-    'jquery',
-    'current-user',
-    'dmenu',
-    'html', 
-    'login-dialog',
-    'app/dmenu',
-    'init/dmenu-source-start',
-    'init/dform-source-start'
+    'jquery'
 ], function (
-    $,
-    currentUser,
-    dmenu,
-    html, 
-    loginDialog,
-    XXX,
-    YYY,
-    ZZZ
+    $
 ) {
-
-    var dummy = Object.create(null);
-    //
-    // throw up HTML body
-    $(document.body).html(html.body());
-    //
-    // pass control to main menu or login dialog, as appropriate
-    if (currentUser.obj.nick) {
-        dmenu.demoMenu.start();
-    } else {
-        loginDialog();
-    }
-
-    // return a dummy object
-    return dummy;
-
+    return function (mfao, scb, fcb) {
+        // mfao is 'MFILE AJAX Object'
+        // scb is 'Success Call Back' 
+        // fcb is 'Failure Call Back' 
+        $('#result').html('');
+        console.log("MFILE.lib.AJAX", mfao);
+        $.ajax({
+            'url': '/',
+            'data': JSON.stringify(mfao),
+            'type': 'POST',
+            'processData': false,
+            'contentType': 'application/json'
+        })
+        .done(function (data) {
+            console.log("AJAX call returned ", data);
+            if (data.level === 'OK') {
+                console.log("AJAX call success:", data);
+                if (scb) {
+                    scb(data);
+                } else {
+                    $('#result').html(data.text);
+                }
+            } else {
+                console.log("AJAX call failure:", data);
+                if (fcb) {
+                    fcb(data);
+                } else {
+                    $('#result').html(data.text);
+                }
+            }
+        });
+    };
 });
-

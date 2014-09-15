@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ************************************************************************* 
 #
-# App::MFILE::WWW server executable
+# App::MFILE::WWW server startup script
 #
 # -------------------------------------------------------------------------
 
@@ -42,59 +42,203 @@ use warnings;
 #use App::CELL::Test::LogToFile # uncomment this line to debug initialization
 use App::CELL qw( $site );
 use App::MFILE::WWW;
+use Getopt::Long;
+use File::Path;
 use File::ShareDir;
+use File::Spec;
 use Plack::Builder;
 use Plack::Runner;
+use Try::Tiny;
 use Web::Machine;
  
+
+
+
 =head1 NAME
 
 mfile-www - App::MFILE::WWW server startup script
 
 
 
+
 =head1 VERSION
 
-Version 0.088
+Version 0.097
 
 =cut
 
-our $VERSION = '0.088';
+our $VERSION = '0.097';
+
+
 
 
 
 =head1 SYNOPSIS
 
+Standalone mode:
+
+    $# start the HTTP server
     $ mfile-www
 
+Derived distribution mode with derived distro 'App::Dochazka::WWW':
+
+    $# create necessary directories and symlinks
+    $ sudo mfile-www --ddist=App-Dochazka-WWW
+
+    $# start the HTTP server
+    $ mfile-www --ddist=App-Dochazka-WWW
+  
+Be careful with any argument you may give with the C<--ddist> option -
+especially when running as root - because the script will attempt to create new
+directories and symlinks wherever the derived distribution (i.e. any
+distribution specified by that argument) is installed.
 
 
-=head1 STATIC FILES
-
-Here we define directories for serving static files
-
-=cut
-
-my $dist_dir = File::ShareDir::dist_dir( 'App-MFILE-WWW' ); 
-
-
-
-    
 =head1 DESCRIPTION
 
-Run this script from the bash prompt to start the server.
+Run this script from the bash prompt to start the server that will provide the
+HTTP server (e.g. Starman) for the frontend. For details see the main
+L<App::MFILE::WWW> documentation.
 
 =cut
 
 print "App::MFILE::WWW ver. $VERSION\n";
 
-print "Initializing\n";
+my $ddist = '';
+my ( $ddist_sharedir, $mfile_sharedir, $http_root );
+
+# Determine uid we are running under and set $running_as_root
+my $pwuid = getpwuid( $< );
+#print "pwuid says you are running as $pwuid\n";
+my $running_as_root = ( $pwuid eq 'root' ) || 0;
+
+# Report the result
+print "Running as ";
+print "root\n" if $running_as_root;
+print "a normal user\n" if not $running_as_root;
+
+# get the App::MFILE::WWW distro sharedir
+$mfile_sharedir = File::ShareDir::dist_dir( 'App-MFILE-WWW' ); 
+
+# determine if we are running in standalone or derived distribution mode
+GetOptions( 'ddist:s' => \$ddist );
+$ddist =~ s/::/-/g; # convert Foo::Bar::Baz to Foo-Bar-Baz
+
+sub _symlink_paths {
+    my ( $ddir ) = @_;
+    # set up "old" and "new" state variables for our symlinks
+    state $old_css = File::Spec->catfile( $mfile_sharedir, 'css' );
+    state $new_css = File::Spec->catfile( $ddir, 'css' );
+    state $old_corejs = File::Spec->catfile( $mfile_sharedir, 'js', 'core' );
+    state $new_corejs = File::Spec->catfile( $ddir, 'js', 'core' );
+
+    return ( 
+        old_css => $old_css,
+        new_css => $new_css,
+        old_corejs => $old_corejs,
+        new_corejs => $new_corejs,
+    );
+}
+ 
+sub _symlinks_exist {
+    my ( $ddir ) = @_;
+    my %sp = _symlink_paths( $ddir );
+    # check if the "new" already exist and are symlinks
+    return ( -l $sp{new_css} and -l $sp{new_corejs} );
+}
+    
+sub _create_symlink {
+    my ( $old, $new ) = @_;
+    die "Need to be root to create symlink" unless $running_as_root;
+    my ( undef, $path, $file ) = File::Spec->splitpath( $new );
+    File::Path::make_path( $path );
+    symlink( $old, $new ) ;
+    if ( ! stat( $new ) ) {
+        unlink( $new );
+        die "Could not create symlink $old -> $new";
+    }
+    return;
+}
+
+# if the user as specified a derived distribution, we might be running in
+# derived distribution mode
+if ( $ddist ) {
+
+    # first, try to get the name of derived distribution sharedir
+    try {
+        $ddist_sharedir = File::ShareDir::dist_dir( $ddist );
+    } catch {
+        print "Invalid derived distro '$ddist'\n";
+        exit;
+    };
+    print "Derived distro is $ddist\n";
+    print "Derived distro sharedir is $ddist_sharedir\n";
+
+    # in derived distro mode, we need symlinks; check if they exist
+    if ( ! _symlinks_exist( $ddist_sharedir ) ) {
+        print '$running_as_root == ' . $running_as_root . "\n";
+        if ( ! $running_as_root ) {
+            print "Symlinks not present; run the script again as root\n";
+            exit;
+        }
+
+        # we are running as root; attempt to create the symlinks
+
+        # if unsuccessful, the _create_symlink routine will die and attempt
+        # to clean up after itself
+        my %sp = _symlink_paths( $ddist_sharedir );
+        _create_symlink( $sp{old_css}, $sp{new_css} );
+        _create_symlink( $sp{old_corejs}, $sp{new_corejs} ); 
+    }
+
+    print "Symlinks are OK";
+
+    # symlinks are OK, but if running as root we can't continue
+    if ( $running_as_root ) {
+        print "; now run the script again as a normal user\n";
+        exit;
+    } else {
+        print "\n";
+    }
+
+    # all should be green now, but we doublecheck anyway: in derived distribution mode
+    # we need to fulfill the following conditions:
+
+    # 1. be running as a normal (non-root) user
+    die "Derived distro given; need to be running as a normal user" if $running_as_root;
+
+    # 2. the distro needs to have a valid sharedir
+    die "Derived distro given, but no sharedir" unless $ddist_sharedir;
+
+    # 3. the symlinks to the App::MFILE::WWW sharedir need to have been created
+    die "Derived distro given, but symlinks not created" unless _symlinks_exist( $ddist_sharedir );
+
+    # all conditions fulfiled
+    print "Running in derived distribution mode\n";
+    $http_root = $ddist_sharedir;
+
+} else {
+
+    die "Running as root in standalone mode; nothing to do" if $running_as_root;
+    print "Running in standalone mode\n";
+    $http_root = $mfile_sharedir;
+
+}
+
+#
+#
+# we now know which mode we are running in ("standalone" - $ddist is false -, or
+# "derived distribution" - $ddist is distro name/true)
+#
+#
+
+print "\nInitializing...\n";
 my $status = App::MFILE::WWW::init( sitedir => '/etc/mfile-www', debug_mode => 1 );
 die "\n" . $status->text unless $status->ok;
 
 print "Log messages will be written to " . $site->MFILE_WWW_LOG_FILE .  "\n";
 
-print "JS and CSS files will be served from $dist_dir\n";
+print "JS and CSS files will be served from $http_root\n";
 
 print "Starting server\n";
 
@@ -112,7 +256,7 @@ $runner->run(
     builder {
         enable "StackTrace", force => 1;
         enable "Session";
-        enable "Static", path => qr{^/(js|css)/}, root => $dist_dir;
+        enable "Static", path => qr{^/(js|css)/}, root => $http_root;
         Web::Machine->new( resource => 'App::MFILE::WWW::Resource', )->to_app;
     }
 );

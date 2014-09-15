@@ -30,40 +30,32 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// cf.js
+// test.js
 //
-// provides a function that makes configuration parameters passed in from Perl
-// side available to JavaScript modules that need them. Also provides a way to
-// override these parameters with new values. Note, however, that overrides
-// will survive only until the next page reload, which can happen at any time.
-//
-// The 'cf' function takes two parameters:
-// - parameter name (as defined in 'module.config' - see Resource.pm->gen_html)
-// - optionally, a new value for the parameter, which will override the
-//   old value until the next page reload
+// Unit testing script
 //
 "use strict";
 
-var state = {};
-
-define(['module'], function (module) {
-
-    // the 'cf' module exports a function, 'cf' that takes two 
-    // parameters. The first parameter is the name of the config
-    // parameter we are interested in. If the second parameter is
-    // undefined or null, the function returns the value of the 
-    // parameter. Otherwise, it sets the parameter to a new value
-    // and returns that value.
-
-    return function (param, override) {
-        if (override) {
-            state[param] = override;
-            return override;
-        }
-        return (state.hasOwnProperty(param))
-            ? state[param]
-            : module.config()[param];
-    };
-
+require ([
+    'QUnit',
+    'tests/dummy',
+    'tests/cf',
+    'tests/current-user',
+    'tests/lib',
+    'tests/prototypes'
+], function (
+    qunit,
+    dummyTests,
+    cfTests,
+    currentUserTests,
+    libTests,
+    prototypeTests
+) {
+    dummyTests();
+    cfTests();
+    currentUserTests();
+    libTests();
+    prototypeTests();
+    qunit.load();
+    qunit.start();
 });
-

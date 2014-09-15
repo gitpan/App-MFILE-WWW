@@ -30,9 +30,27 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// dform.js - storage for dforms
+// tests/current-user.js
 //
-
+// Test the currentUser object
+//
 "use strict";
 
-define ([], {});
+define ([
+    'current-user'
+], function (
+    currentUser
+) {
+
+    return function () {
+        test('currentUser object', function () {
+            ok(currentUser.hasOwnProperty('obj'), "currentUser.obj OK");
+            ok(currentUser.hasOwnProperty('priv'), "currentUser.priv OK");
+            ok(currentUser.obj.hasOwnProperty('nick'), "currentUser.obj.nick OK");
+            ok(currentUser.obj.hasOwnProperty('passhash'), "currentUser.obj.passhash OK");
+            ok(currentUser.obj.hasOwnProperty('salt'), "currentUser.obj.salt OK");
+        });
+    };
+
+});
+

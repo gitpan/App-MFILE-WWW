@@ -30,31 +30,19 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// mfile-www/daction.js
-//
-// daction definitions
+// tests/dummy.js
 //
 "use strict";
 
 define ([
-    "jquery",
-    "logout"
+    'cf'
 ], function (
-    $,
-    logout
+    cf
 ) {
-    var do = {
-            "sampleAction": function () {
-                $('#mainarea').html('<br><br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>');
-                setTimeout(function () { location.reload(); }, 1500);
-            },
-            "logout": logout
-        };
-   
-    return function (a) {
-        if (do.hasOwnProperty(a)) {
-            return do[a];
-        }
-        return undefined;
+    return function () {
+        test('unit testing framework present', function () {
+            ok(true, "Passed!");
+        });
     };
 });
+

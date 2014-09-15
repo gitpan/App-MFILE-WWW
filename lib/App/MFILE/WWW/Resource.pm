@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.088
+Version 0.097
 
 =cut
 
-our $VERSION = '0.088';
+our $VERSION = '0.097';
 
 
 
@@ -140,8 +140,17 @@ sub _render_response_html {
     my ( $self ) = @_;
     my $r = $self->request;
     my $session = Plack::Session->new( $r->{'env'} );
+    my $ce = $session->get('currentEmployee');
+    my $cepriv;
+    if ( $ce ) {
+        $cepriv = $ce->{'priv'} || '';
+        delete $ce->{'priv'};
+        delete $ce->{'schedule'};
+    }
     my $entity;
-    $entity = gen_html( $session );
+    $entity = ( $r->path_info =~ m/test/i )
+        ? test_html( $ce, $cepriv )
+        : main_html( $ce, $cepriv );
     return $entity;
 }
 
@@ -562,7 +571,7 @@ sub init_session {
 }
 
 
-=head3 gen_html
+=head3 main_html
 
 Takes the session object and returns HTML string to be displayed in the user's
 browser.
@@ -571,17 +580,8 @@ FIXME: might be worth spinning this off into a separate module.
 
 =cut
 
-sub gen_html {
-    my ( $session ) = @_;
-
-    my $ce = $session->get('currentEmployee');
-    my $cepriv;
-    if ( $ce ) {
-        $cepriv = $ce->{'priv'} || '';
-        delete $ce->{'priv'};
-        delete $ce->{'schedule'};
-    }
-    $log->debug( "Entering HTML.pm->gen_html; session ID is " . $session->id );
+sub main_html {
+    my ( $ce, $cepriv ) = @_;
 
     my $r = '<!DOCTYPE html><html>';
 
@@ -589,7 +589,58 @@ sub gen_html {
     $r .= "<title>App::Dochazka::WWW $VERSION</title>";
     $r .= '<link rel="stylesheet" type="text/css" href="/css/start.css" />';
 
-    # bring in RequireJS
+    # Bring in RequireJS
+    $r .= _require_js($ce, $cepriv);
+
+    $r .= '</head>';
+    $r .= '<body>';
+
+    # Start the main app logic
+    $r .= '<script>require([\'main\']);</script>';
+
+    $r .= '</body>';
+    $r .= '</html>';
+    return $r;
+}
+
+
+=head3 test_html
+
+Generate html for running unit tests
+
+=cut
+
+sub test_html {
+    my ( $ce, $cepriv ) = @_;
+
+    my $r = '';
+    
+    $r = '<!DOCTYPE html><html>';
+    $r .= '<head><meta charset="utf-8">';
+    $r .= "<title>Unit testing App::MFILE::WWW $VERSION</title>";
+    $r .= '<link rel="stylesheet" type="text/css" href="/css/qunit.css" />';
+
+    # Bring in RequireJS
+    $r .= _require_js($ce, $cepriv);
+
+    $r .= '</head><body>';
+    $r .= '<div id="qunit"></div>';
+    $r .= '<div id="qunit-fixture"></div>';
+
+    # Start unit tests
+    $r .= '<script>require([\'test\']);</script>';
+
+    $r .= '</body></html>';
+    return $r;
+}
+
+
+# HTML necessary for RequireJS
+sub _require_js {
+    my ( $ce, $cepriv ) = @_;
+
+    my $r = '';
+
     $r .= "<script src='" . $site->MFILE_WWW_JS_REQUIREJS . "'></script>";
 
     $r .= '<script>';
@@ -603,12 +654,29 @@ sub gen_html {
     # map 'jquery' module to 'jquery-private.js'
     # (of course, the real 'jquery.js' must be present in 'js/')
     $r .= 'map: {';
-    $r .= "'*': { 'jquery': 'jquery-private' },";
-    $r .= "'jquery-private': { 'jquery': 'jquery' }";
+    $r .= "    '*': { 'jquery': 'jquery-private' },";
+    $r .= "    'jquery-private': { 'jquery': 'jquery' }";
     $r .= '},';
+
+    # 'app' is assumed to be a sibling to baseUrl, and qunit.js is assumed to
+    # be in baseUrl
     $r .= 'paths: {';
-    $r .= '"app": "' . $site->MFILE_APPNAME . '"';
+    $r .= '    "app": "../' . $site->MFILE_APPNAME . '",';
+    $r .= '    "QUnit": "qunit"';
+    $r .= '},';
+
+    # QUnit needs some coaxing to work together with RequireJS
+    $r .= 'shim: {';
+    $r .= '    "QUnit": {';
+    $r .= '        exports: "QUnit",';
+    $r .= '        init: function () {';
+    $r .= '            QUnit.config.autoload = false;';
+    $r .= '            QUnit.config.autostart = false;';
+    $r .= '        }';
+    $r .= '    }';
     $r .= '}';
+
+    # end of require.config
     $r .= "});";
 
     # initialize configuration parameters that we need on JavaScript side
@@ -621,7 +689,7 @@ sub gen_html {
 
         # currentEmployee 
         $r .= "currentUser: " . ( $ce ? to_json( $ce ) : 'null' ) . ',';
-        $r .= 'currentUserPriv: ' . ( ( '\'' . $cepriv . '\'' ) || 'null' ) . ',';
+        $r .= 'currentUserPriv: \'' . ( $cepriv || 'passerby' ) . '\',';
 
         # loginDialog
         $r .= 'loginDialogChallengeText: \'' . $site->MFILE_WWW_LOGIN_DIALOG_CHALLENGE_TEXT . '\',';
@@ -632,17 +700,8 @@ sub gen_html {
         $r .= 'dummyParam: null';
 
     $r .= '} } });';
-
-    # Start the main app logic
-    $r .= 'require([\'main\']);';
-
     $r .= '</script>';
-
-    $r .= '</head>';
-    $r .= '<body>';
-    $r .= '</body>';
-    $r .= '</html>';
     return $r;
-}
+} 
 
 1;

@@ -30,35 +30,57 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// dmenu.js -- first-round initialization and storage of dmenu objects
+// main.js
 //
-// A 'dmenu' is a simple menu that is dynamically generated at runtime.
+// Entry point to JavaScript side; displays the application frame in the
+// browser window and passes off control either to the login dialog or 
+// the main menu, depending on what session data is passed in from the
+// Perl side
 //
-// dmenus are initialized in several rounds -- this module being the first.
-// It creates the dmenu module object. and populates it with a "core" dmenu,
-// called 'demoMenu'. At this point, the demoMenu object is incomplete: it
-// is missing 'source', 'start', 'entries', and 'back' properties.
-//
-// The second round of initialization is the application's dmenu routine,
-// (app/dmenu), which adds its own application-specific set of (incomplete)
-// dmenus to this object. The location of the 'app' directory is configurable.
-// If it is not set, it defaults to 'share/js/app' of this distro, where a
-// 'demoMenu' object is created.
-//
-// In the third round, which can only take place after all daction and
-// dform objects have been initialized, the 'entries' and 'back' properties
-// are added to each core dmenu object.
-//
-// Round 4: add 'entries' and 'back' properties to the application's dmenu
-// objects.
-//
-// Finally, in the last round (init/dmenu), a 'source' property and a
-// 'start' method are generated and added to each dmenu object created in
-// the previous rounds.
-//
-// (This initialization is driven by the 'main' module.)
-//
-
 "use strict";
 
-define ([], {});
+define ([
+    'jquery',
+    'current-user',
+    'html', 
+    'login-dialog',
+    'app/target-init',
+    'target'
+], function (
+    $,
+    currentUser,
+    html, 
+    loginDialog,
+    targetInit,
+    target
+) {
+
+    var dummy = Object.create(null),
+        t;
+
+    //
+    // throw up HTML body
+    //
+    $(document.body).html(html.body());
+
+    //
+    // initialize targets
+    //
+    targetInit();
+    t = target.pull('demoMenu');
+    console.log('Pulled target ', t);
+
+    //
+    // pass control to main menu or login dialog, as appropriate
+    //
+    if (currentUser.obj.nick) {
+        t.start();
+    } else {
+        loginDialog();
+    }
+
+    // return a dummy object
+    return dummy;
+
+});
+

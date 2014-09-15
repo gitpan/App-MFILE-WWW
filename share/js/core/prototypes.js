@@ -30,48 +30,53 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// daction.js
+// prototypes.js
 //
-// Unlike simple menus, mini menus, and simple forms, which only display
-// information, dactions (direct actions or Dochazka Actions) have
-// consequences. They change information.
-// 
-// All dactions have a 'start' method that takes an object (can be 
-// null). This is how the action is executed.
 //
-
 "use strict";
 
-define ([
-            'jquery',
-            'lib',
-            'logout'
-], function (
-            $,
-            lib,
-            logout
-) {
-
-    var do_sampleAction = function () {
-            $('#mainarea').html('<br><br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>');
-            setTimeout(function () { location.reload(); }, 1500);
-        };
+define(function () {
     return {
-        // sampleAction
-        sampleAction: lib.dactionConstructor({
-            'name': 'sampleAction',
-            'menuText': 'Do something',
-            'aclProfile': 'passerby',
-            'start': do_sampleAction
-        }),
-        // logout
-        logout: lib.dactionConstructor({
-            'name': 'logout',
-            'menuText': 'Logout',
-            'aclProfile': 'passerby',
-            'start': logout
-        })
-    };
 
+    // Simple menus, mini menus, and actions all share certain properties
+    // (and methods) like 'name', 'menuText', etc. To streamline the
+    // creation and use of these three basic object classes, we create a
+    // 'target' object to serve as a prototype.
+
+        target: {
+            name: 'targetPrototype',
+            get_name: function () {
+                return this.name;
+            },
+            menuText: 'Target prototype',
+            get_menuText: function () {
+                return this.menuText;
+            },
+            aclProfile: 'passerby',
+            get_aclProfile: function () {
+                return this.aclProfile;
+            },
+            source: '',
+            get_source: function () {
+                return this.source;
+            },
+            start: function () {},
+            get_start: function () {
+                return this.start;
+            }
+        },
+
+    // MFILE assumes that the application will have a concept of a "user" -
+    // perhaps under a different name, like "employee", but sharing certain
+    // very basic properties like 'nick', 'passhash', and 'salt' which are
+    // defined in this ancestral prototype
+
+        user: {
+            nick: '',
+            passhash: '',
+            salt: ''
+        }
+
+    };
 });
 

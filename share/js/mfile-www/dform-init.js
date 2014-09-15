@@ -32,60 +32,69 @@
 //
 // app/dform.js
 //
-
+// Round one of dform initialization (called from app/target-init)
+//
 "use strict";
 
 define ([
-    'daction',
-    'dmenu',
-    'lib'
+    'target'
 ], function (
-    daction,
-    dmenu,
-    lib
+    target
 ) {
 
-    var dummy = Object.create(null),
-        entries = {        
+    //
+    // define dform entries here
+    //
+    var entries = {        
 
-            // read-only form entry no. 1
-            'ROFormEntry1': {
-                name: 'ROFormEntry1',
-                aclProfileRead: 'passerby',
-                aclProfileWrite: null,
-                text: 'RO Entry 1',
-                prop: 'roentry1',
-                maxlen: 20
+        // read-only form entry no. 1
+        'ROFormEntry1': {
+            name: 'ROFormEntry1',
+            aclProfileRead: 'passerby',
+            aclProfileWrite: null,
+            text: 'RO Entry 1',
+            prop: 'roentry1',
+            maxlen: 20
+        },
+
+        // read-write form entry no. 1
+        'RWFormEntry1': {
+            name: 'RWFormEntry1',
+            aclProfileRead: 'passerby',
+            aclProfileWrite: 'passerby',
+            text: 'RW Entry 1',
+            prop: 'rwentry1',
+            maxlen: 20
+        }
+
+    };
+    
+    return function () {
+        //
+        // push dform object definitions onto 'target' here
+        //
+        target.push('demoForm', {
+            'name': 'demoForm',
+            'type': 'dform',
+            'menuText': 'Demonstrate simple forms',
+            'title': 'Demo form',
+            'preamble': 'This is just an illustration',
+            'aclProfile': 'passerby',
+            'entriesRead': [ entries.ROFormEntry1 ],
+            'entriesWrite': [ entries.RWFormEntry1 ],
+            'hookGetObj': function () {
+                return {
+                    roentry1: 'Some information here',
+                    rwentry1: null
+                };
             },
-
-            // read-write form entry no. 1
-            'RWFormEntry1': {
-                name: 'RWFormEntry1',
-                aclProfileRead: 'passerby',
-                aclProfileWrite: 'passerby',
-                text: 'RW Entry 1',
-                prop: 'rwentry1',
-                maxlen: 20
+            'miniMenu': {
+                entries: ['sampleAction'],
+                back: ['Back', 'demoMenu']
             }
 
-        };
+        });
 
-    dform.demoForm = lib.dformConstructor({
-        'name': 'demoForm',
-        'menuText': 'Demonstrate simple forms',
-        'title': 'Demo form',
-        'preamble': 'This is just an illustration',
-        'aclProfile': 'passerby',
-        'entriesRead': [ entries.ROFormEntry1 ],
-        'entriesWrite': [ entries.RWFormEntry1 ],
-        'hookGetObj': function () {
-            return {
-                roentry1: 'Some information here',
-                rwentry1: null
-            };
-        }
-    });
-
-    return dummy;
-
+    };
+    
 });

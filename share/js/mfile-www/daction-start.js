@@ -30,53 +30,37 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// prototypes.js
+// mfile-www/daction-start.js
 //
+// daction 'start' method definitions
+//
+// shorter daction functions can be included directly (see, e.g.,
+// 'sampleAction' below); longer ones should be placed in their own module and
+// brought in as a dependency (see, e.g. 'logout' below)
 //
 "use strict";
 
-define(function () {
-    return {
+define ([
+    "jquery",
+    "logout"
+], function (
+    $,
+    logout
+) {
 
-    // Simple menus, mini menus, and actions all share certain properties
-    // (and methods) like 'name', 'menuText', etc. To streamline the
-    // creation and use of these three basic object classes, we create a
-    // 'target' object to serve as a prototype.
-
-        target: {
-            name: 'targetPrototype',
-            get_name: function () {
-                return this.name;
+    var act = {
+            "sampleAction": function () {
+                $('#mainarea').html('<br><br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>');
+                setTimeout(function () { location.reload(); }, 1500);
             },
-            menuText: 'Target prototype',
-            get_menuText: function () {
-                return this.menuText;
-            },
-            aclProfile: 'passerby',
-            get_aclProfile: function () {
-                return this.aclProfile;
-            },
-            source: null,
-            get_source: function () {
-                return this.source;
-            },
-            start: function () {},
-            get_start: function () {
-                return this.start;
-            }
-        },
-
-    // MFILE assumes that the application will have a concept of a "user" -
-    // perhaps under a different name, like "employee", but sharing certain
-    // very basic properties like 'nick', 'passhash', and 'salt' which are
-    // defined in this ancestral prototype
-
-        user: {
-            nick: null,
-            passhash: null,
-            salt: null
+            "logout": logout
+        };
+   
+    return function (a) {
+        if (act.hasOwnProperty(a)) {
+            return act[a];
         }
-
+        return undefined;
     };
-});
 
+});

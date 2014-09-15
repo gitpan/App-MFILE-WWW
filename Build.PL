@@ -34,6 +34,7 @@ my $builder = Module::Build->new(
         'perl'           => 5.012,
         'App::CELL'      => 0.194,
         'App::MFILE'     => 0.170,
+        'Getopt::Long'   => 0,
         'File::ShareDir' => 0,
         'JSON'           => 0,
         'Log::Any::Adapter' => 0,

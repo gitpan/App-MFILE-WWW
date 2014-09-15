@@ -17,6 +17,6 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-pod_coverage_ok( 'App::Dochazka::WWW' );
+pod_coverage_ok( 'App::MFILE::WWW' );
 
 done_testing;

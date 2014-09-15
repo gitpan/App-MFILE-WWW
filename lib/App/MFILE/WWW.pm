@@ -58,11 +58,11 @@ App::MFILE::WWW - Generic web front-end with demo app
 
 =head1 VERSION
 
-Version 0.088
+Version 0.097
 
 =cut
 
-our $VERSION = '0.088';
+our $VERSION = '0.097';
 
 
 
@@ -72,8 +72,6 @@ our $VERSION = '0.088';
 This software is distributed under the "BSD 3-Clause" license, the text of
 which can be found in the file named C<COPYING> in the top-level distro
 directory. The license text is also reprodued at the top of each source file.
-
-
 
 
 
@@ -90,9 +88,11 @@ L<App::Dochazka::REST> and contains a single menu, a simple form, and a
 sample action.
 
 
-=head1 INTRODUCTION
 
-The full stack, of which L<App::MFILE::WWW> is a part, consists of the
+
+=head1 STACK
+
+The full stack of which L<App::MFILE::WWW> is a part consists of the
 following components:
 
 =over
@@ -123,15 +123,220 @@ experience" of the application.
 
 =back
 
-Conceptually, the clients act as proxies between the user and the REST
-server. Taking this one step further, the REST server itself is a proxy between
-the client and the database engine.
+Conceptually, the clients (frontends) act as proxies between the user and
+the REST server. Taking this one step further, the REST server itself is a
+proxy between the client and the database engine.
 
-The philosophy behind this RESTful design is that you, the user, have the
-freedom and the flexibility to write your own client, on any platform, in any
-language -- however you see fit. From a technical perspective, the strict
-separation between the server and clients makes the application as a whole more
-robust.
+From a technical perspective, the strict separation between the REST server
+and its clients makes the application as a whole more robust.
+
+
+
+=head1 DERIVED WWW CLIENTS
+
+The philosophy behind the stack design described above is that you, the
+user, have the freedom and the flexibility to write your own client, on any
+platform, in any language -- however you see fit. In other words, you are
+not forced to use any particular client. Conceivably, you can even
+communicate with the REST server without any client at all.
+
+However, writing a client is time- and labor-intensive. Although
+L<App::MFILE::WWW> is capable of standalone operation, it is designed as a
+"foundation" upon which derived clients can be written. 
+
+
+=head2 Standalone operation
+
+L<App::MFILE::WWW> can be run as a standalone HTTP server. Authentication
+is disabled by default, so no REST server is needed in this scenario.
+
+Before a derived client can be written, the developer must first understand
+how L<App::MFILE::WWW> is structured. This is easily understood by
+examining how it works in standalone mode.
+
+Assuming L<App::MFILE::WWW> has been installed properly, it can be started
+in standalone mode by running C<mfile-www>, as a normal user, with no
+arguments or options. Here is a basic description of what happens in this
+scenario -- refer to the script source code in C<bin/mfile-www> for better
+understanding:
+
+=over
+
+=item * by default (in the absence of the C<--ddist> option), C<$ddist> is
+set to the empty string
+
+=item * C<$ddist_dir> is not set
+
+=item * the script calls the C<App::MFILE::WWW::init> routine, which loads
+the configuration parameters stored in C<config/WWW_Config.pm> of the
+core distro (L<App::MFILE::WWW>) sharedir
+
+=item * since no C<sitedir> option was specified on the command line, no
+other configuration files are loaded
+
+=item * the configuration parameters and their core default values can be
+seen in C<config/WWW_Config.pm> under the core distro (L<App::MFILE::WWW>)
+sharedir
+
+=item * a very important configuration parameter is MFILE_WWW_LOG_FILE,
+which is the full path to the log file where the Perl side of
+L<App::MFILE::WWW> will write its log messages -- by default, this is set
+to '.mfile-www.log' in the user's home directory, and the current setting is
+always reported on-screen by the startup script so the user knows where to
+look if something goes wrong
+
+=item * the HTTP server is started by calling L<Plack::Runner>, and the
+script reports to the user the port number at which it is listening (5001 by
+default)
+
+=item * the HTTP server always interprets URL paths it receives relative to
+its "root" (called C<HTTP_ROOT> for the purposes of this document), which
+is set to the core distro (L<App::MFILE::WWW>) sharedir in this case
+
+=item * JS and CSS files are considered "static content" and will be served
+from C<HTTP_ROOT/js> and C<HTTP_ROOT/css>, respectively
+
+=item * when an HTTP 'GET' request comes in on the port where the HTTP
+server is listening, and it is not requesting static content, the request
+is passed on to the L<Web::Machine> application (effectively,
+L<App::MFILE::WWW::Resource>) for processing
+
+=item * POST requests are assumed to be AJAX calls and are handled by the
+C<process_post> routine of L<App::MFILE::WWW::Resource>
+
+=item * GET requests are assumed to have originated from a web browser
+running on a user's computer -- to handle these, the C<main_html> routine
+of C<Resource.pm> generates HTML code which is sent back in the HTTP
+response
+
+=item * the HTML so generated contains embedded JavaScript code to start up
+L<RequireJS|http://requirejs.org> with the required configuration
+and pass control over to "the JavaScript side" of L<App::MFILE::WWW>
+
+=back
+
+The embedded JavaScript code does the following:
+
+=over
+
+=item * sets the C<baseURL> to C<$site->MFILE_WWW_REQUIREJS_BASEURL>, which
+is set to C</js> -- in absolute terms, this means C<HTTP_ROOT/js>
+
+=item * sets the "C<app>" path config to C<$site->MFILE_APPNAME> -- for
+example, if C<$site->MFILE_APPNAME> is set to 'foobar', the path config for
+C<app> will be set to C<foobar> and a RequireJS dependency C<app/bazblat>
+on the JavaScript side will translate to C<HTTP_ROOT/js/foobar/bazblat.js>
+
+=item * in this particular case, of course, C<MFILE_APPNAME> is set to
+C<mfile-www>
+
+=item * persuades RequireJS via magic incantations to "play nice" together
+with jQuery and QUnit
+
+=item * by calling C<requirejs.config>, brings in site configuration
+parameters needed on the JavaScript side so they can be accessed via the
+C<cf> JS module
+
+=item * passes control to the C<app/main> JS module
+
+=back
+
+What happens on the JavaScript side is described in a different section of
+this documentation.
+
+
+=head2 Derived client operation
+
+In a derived-client scenario, L<App::MFILE::WWW> is basically used as a
+library, or framework, upon which the "real" application is built.
+
+The derived-client handling is triggered by providing the C<--ddist>
+command-line option, i.e.
+
+    $ mfile-www --ddist=App-Dochazka-WWW
+
+Where 'App-Dochazka-WWW' refers to the Perl module L<App::Dochazka::WWW>,
+which is assumed to contain the derived client source code.
+
+So, in the first place it is necessary to create such a Perl module. The
+L<App::MFILE::WWW> module can be used as a template. It should have a
+sharedir configured and present.
+
+Here is a "play-by-play" description of what happens in this scenario when
+the startup script is run. Again, refer to the script source code in
+C<bin/mfile-www> for better understanding:
+
+=over
+
+=item * C<$ddist> is set to the string given in the C<--ddist> option, e.g.
+C<App-Dochazka-WWW> (or 'App::Dochazka::WWW' in which case it will be converted
+to the correct, hyphen-separated format)
+
+=item * C<$ddist_dir> is set to C<File::ShareDir::dist_dir( $ddist )>, i.e.
+the derived distro sharedir (extending the above example, the distro sharedir
+of L<App::Dochazka::WWW>)
+
+=item * the presence of the C<--ddist> option triggers a special routine
+whose purpose is to ensure that the derived distro exists and that its
+sharedir is properly set up to work with L<App::MFILE::WWW>:
+
+    =over
+
+    =item * error exit if the distro referred to by the C<--ddist> option
+    doesn't exist 
+
+    =item * error exit if the distro lacks a sharedir
+
+    =item * C<css> and C<js/core> need to exist and be symlinks to the same
+    directories in the L<App::MFILE::WWW> sharedir. If this is not the
+    case, the script displays a message asking the user to re-run the
+    script as root
+
+    =item * if already running as root, the symlinks are created and the
+    script displays a message asking to be re-run as a normal user
+
+    =item * once the symlinks are in place, the script runs some sanity
+    checks (mainly verifying the existence of certain files in their
+    expected places)
+
+    =back
+
+=item * the script calls the C<App::MFILE::WWW::init> routine, which loads
+the configuration parameters stored in the following places:
+
+    =over
+
+    =item * the L<App::MFILE::WWW> distro sharedir (under C<config/WWW_Config.pm>)
+
+    =item * the derived distro sharedir (also under C<config/WWW_Config.pm>)
+
+    =item * finally and optionally, if a sitedir was specified on the
+    command line -- for example C<--sitedir=/etc/dochazka-www> --,
+    configuration parameters are loaded from a file C<WWW_SiteConfig.pm> in
+    that directory, overriding the defaults
+
+    =back
+
+=item * the derived distro's configuration should override the
+MFILE_APPNAME parameter -- in our example, it could be set to 'dochazka-www'
+
+=item * also refer to the previous section to review the explanation of the
+MFILE_WWW_LOG_FILE parameter
+
+=item * the HTTP server is started by calling L<Plack::Runner>, and the
+script reports to the user at what port number it is listening (5001 by
+default)
+
+=item * the HTTP server always interprets URL paths it receives relative to
+its "root" (called C<HTTP_ROOT> for the purposes of this document), which
+is set to the I<derived distro's sharedir>
+
+=item * the rest of the description is the same as for L<Standalone
+operation>
+
+=back
+
+
 
 
 =head1 REQUEST-RESPONSE CYCLE
@@ -210,7 +415,34 @@ communicate asynchronously as needed with the REST server via AJAX calls.
 =back
 
 
-=head2 Development notes
+=head1 DEVELOPMENT NOTES
+
+The L<App::MFILE::WWW> codebase has two parts, or "sides": the "Perl side"
+and the "JavaScript side". Control passes from the Perl side to the
+JavaScript side
+
+=over
+
+=item * B<synchronously> whenever the user (re)loads the page
+
+=item * B<asynchronously> whenever the user triggers an AJAX call
+
+=back
+
+
+=head3 JavaScript side
+
+=head4 Modular (RequireJS)
+
+The JavaScript code is modular. Each code module has its own file and
+modules are loaded asynchronously by L<RequireJS|http://requirejs.org/>.
+
+=head4 Unit testing (QUnit)
+
+The JavaScript code included in this package is set up for unit testing
+using the QUnit L<http://qunitjs.com/> library.
+
+
 
 =head3 UTF-8
 

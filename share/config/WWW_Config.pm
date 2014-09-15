@@ -48,21 +48,36 @@ set( 'MFILE_WWW_HOST', 'localhost' );
 set( 'MFILE_WWW_PORT', 5000 );
 
 # MFILE_WWW_LOG_FILE
-#     full path of log file to log to
-set( 'MFILE_WWW_LOG_FILE', '/var/log/mfile-www.log' );
+#     full path of logfile
+set( 'MFILE_WWW_LOG_FILE', $ENV{'HOME'} . "/.mfile-www.log" );
 
 # MFILE_WWW_LOG_FILE_RESET
 #     should the logfile be deleted/wiped/unlinked/reset before each use
-set( 'MFILE_WWW_LOG_FILE_RESET', 0 );
+set( 'MFILE_WWW_LOG_FILE_RESET', 1 );
+
+# MFILE_WWW_CONNECT_TO_REST_SERVER
+#     determines whether connection to REST server will be attempted at all
+set( 'MFILE_WWW_CONNECT_TO_REST_SERVER', 0 );
 
 # MFILE_REST_SERVER_URI
-#     the URI of the App::MFILE::REST server -- this is
-#     only used in 'help' resources
+#     determines the URI where App::MFILE::WWW will forward all AJAX calls
 set( 'MFILE_REST_SERVER_URI', 'http://localhost:5000' );
 
 # MFILE_URI_MAX_LENGTH
 #     see lib/App/MFILE/WWW/Resource.pm
 set( 'MFILE_URI_MAX_LENGTH', 1000 );
+
+# MFILE_WWW_BYPASS_LOGIN_DIALOG
+#     bypass the login dialog - 
+#     if you set this to a true value, be sure to also set
+#     MFILE_WWW_FORCE_LOGIN_CREDENTIALS
+set( 'MFILE_WWW_BYPASS_LOGIN_DIALOG', 0 );
+
+# MFILE_WWW_FORCE_LOGIN_CREDENTIALS
+set( 'MFILE_WWW_FORCE_LOGIN_CREDENTIALS', {
+    'nam' => 'root',
+    'pwd' => 'immutable',
+} );
 
 # MFILE_WWW_LOGIN_DIALOG_CHALLENGE_TEXT
 #     text displayed in the login dialog
@@ -76,17 +91,6 @@ set( 'MFILE_WWW_LOGIN_DIALOG_MAXLENGTH_USERNAME', 20 );
 #     see share/comp/auth.mi
 set( 'MFILE_WWW_LOGIN_DIALOG_MAXLENGTH_PASSWORD', 40 );
 
-# MFILE_WWW_BYPASS_LOGIN_DIALOG
-#     if you set this to a true value, be sure to also set
-#     MFILE_WWW_FORCE_LOGIN_CREDENTIALS
-set( 'MFILE_WWW_BYPASS_LOGIN_DIALOG', 0 );
-
-# MFILE_WWW_FORCE_LOGIN_CREDENTIALS
-set( 'MFILE_WWW_FORCE_LOGIN_CREDENTIALS', {
-    'nam' => 'root',
-    'pwd' => 'immutable',
-} );
-
 # MFILE_WWW_SESSION_EXPIRATION_TIME
 #     number of seconds after which a session will be considered stale
 set( 'MFILE_WWW_SESSION_EXPIRATION_TIME', 3600 );
@@ -98,8 +102,8 @@ set( 'MFILE_WWW_LOGOUT_MESSAGE', '<br><br><br><br>App::MFILE::WWW over and out.<
 # JAVASCRIPT (REQUIREJS)
 #     we use RequireJS to bring in dependencies - the following configuration
 #     parameters are required to bring in RequireJS
-set( 'MFILE_WWW_JS_REQUIREJS',         '/js/require.js' );
-set( 'MFILE_WWW_REQUIREJS_BASEURL',    '/js' );
+set( 'MFILE_WWW_JS_REQUIREJS',         '/js/core/require.js' );
+set( 'MFILE_WWW_REQUIREJS_BASEURL',    '/js/core' );
 
 # -----------------------------------
 # DO NOT EDIT ANYTHING BELOW THIS LINE

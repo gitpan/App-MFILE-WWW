@@ -32,104 +32,41 @@
 //
 // mfile-www/target-init
 //
-// Initialization of demo targets
+// Initialization of targets (round one)
 //
 "use strict";
 
 define ([
-    'app/daction',
-    'target'
+    'target',
+    'app/daction-init',
+    'app/dform-init',
+    'app/dmenu-init',
+    'init/dform-source-start',
+    'init/dmenu-source-start'
 ], function (
-    target
+    target,
+    dactionInitRoundOne,
+    dformInitRoundOne,
+    dmenuInitRoundOne,
+    dformInitRoundTwo,
+    dmenuInitRoundTwo
 ) {
 
     return function () {
 
-        //
-        // dmenus, round one
-        //
-        target.push('demoMenu', {
-            'name': 'demoMenu',
-            'type': 'dmenu',
-            'menuText': 'Demo menu',
-            'title': 'Demo menu',
-            'aclProfile': 'passerby',
-        });
+        console.log("Entering app/target-init");
 
-        //
-        // dactions, round one
-        //
-    return {
-        // sampleAction
-        sampleAction: lib.dactionConstructor({
-            'name': 'sampleAction',
-            'menuText': 'Do something',
-            'aclProfile': 'passerby',
-            'start': do_sampleAction
-        }),
-        // logout
-        logout: lib.dactionConstructor({
-            'name': 'logout',
-            'menuText': 'Logout',
-            'aclProfile': 'passerby',
-            'start': logout
-        })
-    };
+        // round one - set up the targets
+        dactionInitRoundOne();
+        dformInitRoundOne();
+        dmenuInitRoundOne();
 
-});
-
-        
-
-        //
-        // dforms
-        //
-        var entries = {        
-
-            // read-only form entry no. 1
-            'ROFormEntry1': {
-                name: 'ROFormEntry1',
-                aclProfileRead: 'passerby',
-                aclProfileWrite: null,
-                text: 'RO Entry 1',
-                prop: 'roentry1',
-                maxlen: 20
-            },
-
-            // read-write form entry no. 1
-            'RWFormEntry1': {
-                name: 'RWFormEntry1',
-                aclProfileRead: 'passerby',
-                aclProfileWrite: 'passerby',
-                text: 'RW Entry 1',
-                prop: 'rwentry1',
-                maxlen: 20
-            }
-
-        };
-
-    dform.demoForm = lib.dformConstructor({
-        'name': 'demoForm',
-        'menuText': 'Demonstrate simple forms',
-        'title': 'Demo form',
-        'preamble': 'This is just an illustration',
-        'aclProfile': 'passerby',
-        'entriesRead': [ entries.ROFormEntry1 ],
-        'entriesWrite': [ entries.RWFormEntry1 ],
-        'hookGetObj': function () {
-            return {
-                roentry1: 'Some information here',
-                rwentry1: null
-            };
-        }
-    });
-
-    return dummy;
-
-});
-
-        return undefined;
+        // round two - add 'source' and 'start' properties
+        // (dform and dmenu only)
+        dformInitRoundTwo();
+        dmenuInitRoundTwo();
 
     };
 
 });
-    
+

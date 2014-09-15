@@ -30,56 +30,44 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// ajax.js
+// cf.js
 //
-// provides a function that sends AJAX requests to the App::MFILE::WWW server
-// (which forwards them to the REST server) and takes action based on the
-// result.
+// provides a function that makes configuration parameters passed in from Perl
+// side available to JavaScript modules that need them. Also provides a way to
+// override these parameters with new values. Note, however, that overrides
+// will survive only until the next page reload, which can happen at any time.
 //
-// The 'ajax' function takes three arguments:
-// - MFILE AJAX Object (an object)
-// - success callback (a function, can be null or undefined)
-// - failure callback (a function, can be null or undefined)
+// The 'cf' function takes two parameters:
+// - parameter name (as defined in 'module.config' - see Resource.pm->gen_html)
+// - optionally, a new value for the parameter, which will override the
+//   old value until the next page reload
 //
-// The MFILE AJAX Object looks like this:
-// {
-//     "method": any HTTP method accepted by the REST server, or 'LOGIN'
-//     "path": valid path to REST server resource, or 'login'/'logout'
-//     "body": content body to be sent to REST server, or login credentials
-// }
 "use strict";
 
-define(['jquery'], function ($) {
-    return function (mfao, scb, fcb) {
-        // mfao is 'MFILE AJAX Object'
-        // scb is 'Success Call Back' 
-        // fcb is 'Failure Call Back' 
-        $('#result').html('');
-        console.log("MFILE.lib.AJAX", mfao);
-        $.ajax({
-            'url': '/',
-            'data': JSON.stringify(mfao),
-            'type': 'POST',
-            'processData': false,
-            'contentType': 'application/json'
-        })
-        .done(function (data) {
-            console.log("AJAX call returned ", data);
-            if (data.level === 'OK') {
-                console.log("AJAX call success:", data);
-                if (scb) {
-                    scb(data);
-                } else {
-                    $('#result').html(data.text);
-                }
-            } else {
-                console.log("AJAX call failure:", data);
-                if (fcb) {
-                    fcb(data);
-                } else {
-                    $('#result').html(data.text);
-                }
-            }
-        });
+var state = {};
+
+define ([
+    'module'
+], function (
+    module
+) {
+
+    // the 'cf' module exports a function, 'cf' that takes two 
+    // parameters. The first parameter is the name of the config
+    // parameter we are interested in. If the second parameter is
+    // undefined or null, the function returns the value of the 
+    // parameter. Otherwise, it sets the parameter to a new value
+    // and returns that value.
+
+    return function (param, override) {
+        if (override) {
+            state[param] = override;
+            return override;
+        }
+        return (state.hasOwnProperty(param))
+            ? state[param]
+            : module.config()[param];
     };
+
 });
+

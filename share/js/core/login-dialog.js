@@ -35,15 +35,15 @@
 "use strict";
 
 define ([
-            'jquery', 
-            'ajax', 
-            'html', 
-            'lib'
+    'jquery', 
+    'ajax', 
+    'html', 
+    'lib'
 ], function (
-            $, 
-            ajax, 
-            html, 
-            lib
+    $, 
+    ajax, 
+    html, 
+    lib
 ) {
 
     return function () {
