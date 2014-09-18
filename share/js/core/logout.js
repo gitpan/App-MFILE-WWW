@@ -38,38 +38,39 @@
 
 define([
     'jquery', 
-    'ajax'
+    'ajax',
+    'cf',
+    'html'
 ], function (
     $, 
-    ajax
+    ajax,
+    cf,
+    html
 ) {
     return function () {
-        var logoutSource = function () {
-                var r;
-                r = '<br><br><br>';
-                r += 'You have been logged out of our humble application<br><br>';
-                r += 'Have a lot of fun!<br><br><br>';
-                return r;
+        var displayLogoutMessage = function () {
+                $('#mainarea').html(html.logout());
+                setTimeout(function () { location.reload(); }, 1500);
             },
-            logout = function () {
-                var rest = {
-                        method: 'LOGIN',
-                        path: 'logout',
-                        body: null
-                    },
-                    // success callback
-                    sc = function (status) {
-                        $('#result').html('Logout successful: ' + status.text);
-                        $('#mainarea').html(logoutSource());
-                        // reload the page -- since the session has been
-                        // cleared by the AJAX call, the login dialog will
-                        // be displayed
-                        setTimeout(function () { location.reload(); }, 1500);
-                    },
-                    // failure callback
-                    fc = null;
-                ajax(rest, sc, fc);
-            };
+            // if in standalone mode (i.e. if connectToRestServer is false),
+            // 'logout' means just reload the page
+            logout = cf('connectToRestServer') === 'false'
+                ? function () { displayLogoutMessage(); }
+                : function () {
+                    var rest = {
+                            method: 'LOGIN',
+                            path: 'logout',
+                            body: null
+                        },
+                        // success callback
+                        sc = function (status) {
+                            $('#result').html('Logout successful: ' + status.text);
+                            displayLogoutMessage();
+                        },
+                        // failure callback
+                        fc = null;
+                    ajax(rest, sc, fc);
+                };
         logout();
     }
 });

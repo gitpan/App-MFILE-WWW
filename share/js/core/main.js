@@ -41,6 +41,7 @@
 
 define ([
     'jquery',
+    'cf',
     'current-user',
     'html', 
     'login-dialog',
@@ -48,6 +49,7 @@ define ([
     'target'
 ], function (
     $,
+    cf,
     currentUser,
     html, 
     loginDialog,
@@ -71,8 +73,20 @@ define ([
     console.log('Pulled target ', t);
 
     //
+    // mode-specific setup
+    //
+    console.log( 'connectToRestServer is ' + cf('connectToRestServer') );
+    if ( cf('connectToRestServer') === 'false' ) {
+        console.log( "Standalone mode: setting nick to 'demo'" );
+        currentUser.obj.nick = 'demo';
+    } else {
+        console.log( "Derived distribution mode" );
+    }
+
+    //
     // pass control to main menu or login dialog, as appropriate
     //
+    console.log( 'currentUser.obj.nick is ' + currentUser.obj.nick );
     if (currentUser.obj.nick) {
         t.start();
     } else {

@@ -55,10 +55,6 @@ set( 'MFILE_WWW_LOG_FILE', $ENV{'HOME'} . "/.mfile-www.log" );
 #     should the logfile be deleted/wiped/unlinked/reset before each use
 set( 'MFILE_WWW_LOG_FILE_RESET', 1 );
 
-# MFILE_WWW_CONNECT_TO_REST_SERVER
-#     determines whether connection to REST server will be attempted at all
-set( 'MFILE_WWW_CONNECT_TO_REST_SERVER', 0 );
-
 # MFILE_REST_SERVER_URI
 #     determines the URI where App::MFILE::WWW will forward all AJAX calls
 set( 'MFILE_REST_SERVER_URI', 'http://localhost:5000' );

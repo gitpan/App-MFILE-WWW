@@ -41,8 +41,8 @@ define ([
     'app/daction-init',
     'app/dform-init',
     'app/dmenu-init',
-    'init/dform-source-start',
-    'init/dmenu-source-start'
+    'dform-source-start',
+    'dmenu-source-start'
 ], function (
     target,
     dactionInitRoundOne,

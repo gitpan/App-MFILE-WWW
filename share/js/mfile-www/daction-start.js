@@ -35,23 +35,35 @@
 // daction 'start' method definitions
 //
 // shorter daction functions can be included directly (see, e.g.,
-// 'sampleAction' below); longer ones should be placed in their own module and
-// brought in as a dependency (see, e.g. 'logout' below)
+// 'demoActionFromMenu' below); longer ones should be placed in their own
+// module and brought in as a dependency (see, e.g. 'logout' below)
 //
 "use strict";
 
 define ([
     "jquery",
-    "logout"
+    "html",
+    "logout",
+    "target"
 ], function (
     $,
-    logout
+    html,
+    logout,
+    target
 ) {
 
     var act = {
-            "sampleAction": function () {
-                $('#mainarea').html('<br><br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>');
-                setTimeout(function () { location.reload(); }, 1500);
+            "demoActionFromMenu": function () {
+                $('#mainarea').html(html.demoActionFromMenu);
+                setTimeout(function () { 
+                        target.pull('demoMenu').start(); 
+                    }, 1500);
+            },
+            "demoActionFromSubmenu": function () {
+                $('#mainarea').html(html.demoActionFromSubmenu);
+                setTimeout(function () { 
+                        target.pull('demoSubmenu').start(); 
+                    }, 1500);
             },
             "logout": logout
         };

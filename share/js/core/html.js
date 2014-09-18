@@ -42,6 +42,12 @@ define ([
     currentUser
 ) {
     return {
+        demoActionFromMenu: function () {
+            return '<br><br>SAMPLE ACTION - SOMETHING IS HAPPENING<br><br><br>';
+        },
+        demoActionFromSubmenu: function () {
+            return '<br><br>SAMPLE ACTION - foo bar actioning bazness<br><br><br>';
+        },
         loginDialog: function () {
             var r = '';
             r += '<form id="loginform">';

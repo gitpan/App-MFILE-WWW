@@ -49,12 +49,26 @@ define ([
         //
         // dactions, round one
         //
-        target.push('sampleAction', {
-            'name': 'sampleAction',
+        target.push('demoActionFromMenu', {
+            'name': 'demoActionFromMenu',
             'type': 'daction',
-            'menuText': 'Do something',
+            'menuText': 'Do something from main menu',
             'aclProfile': 'passerby',
-            'start': dactionStart('sampleAction')
+            'start': dactionStart('demoActionFromMenu')
+        }),
+        target.push('demoActionFromSubmenu', {
+            'name': 'demoActionFromSubmenu',
+            'type': 'daction',
+            'menuText': 'Do something from submenu',
+            'aclProfile': 'passerby',
+            'start': dactionStart('demoActionFromSubmenu')
+        }),
+        target.push('demoActionFromForm', {
+            'name': 'demoActionFromForm',
+            'type': 'daction',
+            'menuText': 'Action!',
+            'aclProfile': 'passerby',
+            'start': dactionStart('demoActionFromSubmenu')
         }),
         target.push('logout', {
             'name': 'logout',

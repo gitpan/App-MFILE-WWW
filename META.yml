@@ -14,7 +14,7 @@ build_requires:
 configure_requires:
   Module::Build: '0'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4206, CPAN::Meta::Converter version 2.141520'
+generated_by: 'Module::Build version 0.4005, CPAN::Meta::Converter version 2.142060'
 license: bsd
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,10 +23,10 @@ name: App-MFILE-WWW
 provides:
   App::MFILE::WWW:
     file: lib/App/MFILE/WWW.pm
-    version: '0.097'
+    version: '0.101'
   App::MFILE::WWW::Resource:
     file: lib/App/MFILE/WWW/Resource.pm
-    version: '0.097'
+    version: '0.101'
 requires:
   App::CELL: '0.194'
   App::MFILE: '0.17'
@@ -47,5 +47,5 @@ requires:
   Web::Machine: '0.15'
   perl: '5.012'
 resources:
-  license: http://www.opensource.org/licenses/bsd-license.php
-version: '0.097'
+  license: http://opensource.org/licenses/BSD-3-Clause
+version: '0.101'

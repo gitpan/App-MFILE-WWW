@@ -50,40 +50,49 @@
 "use strict";
 
 define ([
-    'jquery'
+    'jquery',
+    'cf'
 ], function (
-    $
+    $,
+    cf
 ) {
-    return function (mfao, scb, fcb) {
-        // mfao is 'MFILE AJAX Object'
-        // scb is 'Success Call Back' 
-        // fcb is 'Failure Call Back' 
-        $('#result').html('');
-        console.log("MFILE.lib.AJAX", mfao);
-        $.ajax({
-            'url': '/',
-            'data': JSON.stringify(mfao),
-            'type': 'POST',
-            'processData': false,
-            'contentType': 'application/json'
-        })
-        .done(function (data) {
-            console.log("AJAX call returned ", data);
-            if (data.level === 'OK') {
-                console.log("AJAX call success:", data);
-                if (scb) {
-                    scb(data);
+    var rf;
+    if ( cf('connectToRestServer') === 'false' ) {
+        // we are not to connect to the REST server at all!
+        rf = function () {};
+    } else {
+        rf = function (mfao, scb, fcb) {
+            // mfao is 'MFILE AJAX Object'
+            // scb is 'Success Call Back' 
+            // fcb is 'Failure Call Back' 
+            $('#result').html('');
+            console.log("MFILE.lib.AJAX", mfao);
+            $.ajax({
+                'url': '/',
+                'data': JSON.stringify(mfao),
+                'type': 'POST',
+                'processData': false,
+                'contentType': 'application/json'
+            })
+            .done(function (data) {
+                console.log("AJAX call returned ", data);
+                if (data.level === 'OK') {
+                    console.log("AJAX call success:", data);
+                    if (scb) {
+                        scb(data);
+                    } else {
+                        $('#result').html(data.text);
+                    }
                 } else {
-                    $('#result').html(data.text);
+                    console.log("AJAX call failure:", data);
+                    if (fcb) {
+                        fcb(data);
+                    } else {
+                        $('#result').html(data.text);
+                    }
                 }
-            } else {
-                console.log("AJAX call failure:", data);
-                if (fcb) {
-                    fcb(data);
-                } else {
-                    $('#result').html(data.text);
-                }
-            }
-        });
-    };
+            });
+        };
+    }
+    return rf;
 });

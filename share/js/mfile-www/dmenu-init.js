@@ -44,18 +44,26 @@ define ([
 
     return function () {
 
-        //
-        // dmenus, round one
-        //
         target.push('demoMenu', {
             'name': 'demoMenu',
             'type': 'dmenu',
             'menuText': 'Demo menu',
             'title': 'Demo menu',
             'aclProfile': 'passerby',
-            'entries': ['sampleAction', 'demoForm'],
+            'entries': ['demoActionFromMenu', 'demoSubmenu' ],
             'back': 'logout'
         });
+
+        target.push('demoSubmenu', {
+            'name': 'demoSubmenu',
+            'type': 'dmenu',
+            'menuText': 'Demo submenu',
+            'title': 'Demo submenu',
+            'aclProfile': 'passerby',
+            'entries': ['demoActionFromSubmenu', 'demoForm' ],
+            'back': 'demoMenu'
+        });
+
 
     };
 

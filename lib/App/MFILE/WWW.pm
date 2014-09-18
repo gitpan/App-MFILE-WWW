@@ -58,11 +58,11 @@ App::MFILE::WWW - Generic web front-end with demo app
 
 =head1 VERSION
 
-Version 0.097
+Version 0.101
 
 =cut
 
-our $VERSION = '0.097';
+our $VERSION = '0.101';
 
 
 
@@ -482,13 +482,30 @@ configuration directories, and sets up logging.
 
 sub init {
     my %ARGS = validate( @_, { 
+        mode => { type => SCALAR, optional => 1 }, # 'STANDALONE' or 'DDIST', defaults to 'STANDALONE'
         sitedir => { type => SCALAR, optional => 1 },
         debug_mode => { type => SCALAR, optional => 1 },
     } );
 
+    # * determine mode
+    my $mode = $ARGS{'mode'} || 'STANDALONE';
+    if ( $mode =~ m/^(standalone|ddist)$/i ) {
+        if ( $mode =~ m/^ddist$/i ) {
+            $mode = 'DDIST';
+        } else {
+            $mode = 'STANDALONE';
+        }
+    }
+
     # * load site configuration
     my $status = _load_config( %ARGS );
     return $status if $status->not_ok;
+
+    # * mode-specific meta configuration
+    $meta->set( 'META_WWW_CONNECT_TO_REST_SERVER', ( $mode eq 'STANDALONE' 
+        ? 'false'
+        : 'true' ) 
+    );
 
     # * set up logging
     return $CELL->status_not_ok( "MFILE_APPNAME not set!" ) if not $site->MFILE_APPNAME;

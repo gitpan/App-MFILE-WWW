@@ -89,8 +89,8 @@ define ([
                 };
             },
             'miniMenu': {
-                entries: ['sampleAction'],
-                back: ['Back', 'demoMenu']
+                entries: ['demoActionFromForm'],
+                back: ['Back', 'demoSubmenu']
             }
 
         });

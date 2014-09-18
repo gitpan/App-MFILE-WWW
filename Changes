@@ -618,3 +618,28 @@ Revision history for App::MFILE::WWW
 - t/pod-coverage.t: fix typo in test that was causing it to fail on one
   platform
 
+0.098  2014-09-17 17:54 CEST
+- implemented feature standalone/derived distribution mode (so far, only
+  standalone mode has been tested)
+- WWW.pm: add 'mode' param to 'init' routine - if mode is 'STANDALONE', 
+  set META_WWW_CONNECT_TO_REST_SERVER meta param to the string 'false'
+- REST.pm: pass META_WWW_CONNECT_TO_REST_SERVER to cf.js
+- WWW_Config.pm: eliminate MFILE_WWW_CONNECT_TO_REST_SERVER site param
+  as we are using meta for this
+- js/core/main.cf: bring in 'cf' as a dependency; do mode-specific setup
+  and hard-set nick to 'demo' if we are in standalone mode. This has effect
+  of bypassing the login dialog
+
+0.099  2014-09-17 22:17 CEST
+- js/core/ajax.js: in standalone mode there is no REST server
+- js/mfile-www/: add a "demo submenu"
+
+0.100  2014-09-18 08:18 CEST
+- Resource.pm: in 'is_authorized' routine, session is authorized if
+  META_WWW_CONNECT_TO_REST_SERVER is false
+- js/core/logout.js: eliminate 'logoutSource' (duplicated code); in standalone
+  mode, emulate actual logout
+
+0.101  2014-09-18 08:48 CEST
+- js/: divide 'sampleAction' into three demo actions
+

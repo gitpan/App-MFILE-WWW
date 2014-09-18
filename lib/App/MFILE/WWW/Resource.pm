@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.097
+Version 0.101
 
 =cut
 
-our $VERSION = '0.097';
+our $VERSION = '0.101';
 
 
 
@@ -235,10 +235,11 @@ sub is_authorized {
     #
     # authorized session
     #
-    if ( $ce = $session->get('currentEmployee') and
-         $session->get('ip_addr') and 
-         $session->get('ip_addr') eq $remote_addr and
-         _is_fresh( $session ) ) 
+    if ( $meta->META_WWW_CONNECT_TO_REST_SERVER eq 'false' or
+         ( $ce = $session->get('currentEmployee') and
+           $session->get('ip_addr') and 
+           $session->get('ip_addr') eq $remote_addr and
+           _is_fresh( $session ) ) )
     {
         $log->debug( "is_authorized: Authorized session " . $session->id . " (" . $ce->{'nick'} . ")" );
         $session->set('last_seen', time); 
@@ -658,11 +659,10 @@ sub _require_js {
     $r .= "    'jquery-private': { 'jquery': 'jquery' }";
     $r .= '},';
 
-    # 'app' is assumed to be a sibling to baseUrl, and qunit.js is assumed to
-    # be in baseUrl
+    # path config
     $r .= 'paths: {';
-    $r .= '    "app": "../' . $site->MFILE_APPNAME . '",';
-    $r .= '    "QUnit": "qunit"';
+    $r .= '    "app": "../' . $site->MFILE_APPNAME . '",';  # sibling to baseUrl
+    $r .= '    "QUnit": "qunit"';                           # in baseUrl
     $r .= '},';
 
     # QUnit needs some coaxing to work together with RequireJS
@@ -686,6 +686,9 @@ sub _require_js {
         # appName, appVersion
         $r .= 'appName: \'' . $site->MFILE_APPNAME . '\',';
         $r .= 'appVersion: \'' . $VERSION . '\',';
+
+        # connectToRestServer (false means "standalone mode")
+        $r .= 'connectToRestServer: \'' . $meta->META_WWW_CONNECT_TO_REST_SERVER . '\',';
 
         # currentEmployee 
         $r .= "currentUser: " . ( $ce ? to_json( $ce ) : 'null' ) . ',';
