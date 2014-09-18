@@ -41,6 +41,7 @@ use warnings;
 
 #use App::CELL::Test::LogToFile # uncomment this line to debug initialization
 use App::CELL qw( $site );
+use App::CELL::Util qw( is_directory_viable );
 use App::MFILE::WWW;
 use Getopt::Long;
 use File::Path;
@@ -63,11 +64,11 @@ mfile-www - App::MFILE::WWW server startup script
 
 =head1 VERSION
 
-Version 0.101
+Version 0.103
 
 =cut
 
-our $VERSION = '0.101';
+our $VERSION = '0.103';
 
 
 
@@ -75,36 +76,44 @@ our $VERSION = '0.101';
 
 =head1 SYNOPSIS
 
-Standalone mode:
+Standalone mode (runs demo "app" on http://localhost:5001):
 
-    $# start the HTTP server
     $ mfile-www
 
 Derived distribution mode with derived distro 'App::Dochazka::WWW':
 
-    $# create necessary directories and symlinks
+First, create necessary directories and symlinks by running as root:
+
     $ sudo mfile-www --ddist=App-Dochazka-WWW
 
-    $# start the HTTP server
+Then, start the HTTP server
+
     $ mfile-www --ddist=App-Dochazka-WWW
+
+Or, if you need site configuration:
+
+    $ mfile-www --dist=App-Dochazka-WWW --sitedir=/foo/bar/baz
   
-Be careful with any argument you may give with the C<--ddist> option -
-especially when running as root - because the script will attempt to create new
-directories and symlinks wherever the derived distribution (i.e. any
-distribution specified by that argument) is installed.
+NOTE: Be careful with the C<--ddist> option - especially when running as
+root - because the script will treat the argument to this option as a
+"derived" Perl distribution, and attempt to create new directories and
+symlinks in that distribution's "sharedir" (shared directory).
 
 
 =head1 DESCRIPTION
 
 Run this script from the bash prompt to start the server that will provide the
-HTTP server (e.g. Starman) for the frontend. For details see the main
-L<App::MFILE::WWW> documentation.
+HTTP server (e.g. Starman) that will serve the JavaScript source files that
+make up your application's frontend.
+
+For details see the main L<App::MFILE::WWW> documentation.
 
 =cut
 
 print "App::MFILE::WWW ver. $VERSION\n";
 
 my $ddist = '';
+my $sitedir = '';
 my ( $ddist_sharedir, $mfile_sharedir, $http_root );
 
 # Determine uid we are running under and set $running_as_root
@@ -121,7 +130,7 @@ print "a normal user\n" if not $running_as_root;
 $mfile_sharedir = File::ShareDir::dist_dir( 'App-MFILE-WWW' ); 
 
 # determine if we are running in standalone or derived distribution mode
-GetOptions( 'ddist:s' => \$ddist );
+GetOptions( 'ddist=s' => \$ddist, 'sitedir=s' => \$sitedir );
 $ddist =~ s/::/-/g; # convert Foo::Bar::Baz to Foo-Bar-Baz
 
 sub _symlink_paths {
@@ -233,7 +242,21 @@ if ( $ddist ) {
 #
 
 print "\nInitializing...\n";
-my $status = App::MFILE::WWW::init( sitedir => '/etc/mfile-www', debug_mode => 1 );
+
+#
+# prepare arguments for the call to App::MFILE::WWW::init
+#
+my %ARGS = ( debug_mode => 1 );
+if ( $sitedir ) {
+    if ( is_directory_viable( $sitedir) ) {
+        print "Sitedir $sitedir is viable; passing it to App::MFILE::WWW init routine\n";
+        $ARGS{sitedir} = $sitedir;
+    } else {
+        print "WARNING: given sitedir ->$sitedir<- is not viable!\n";
+    }
+}
+
+my $status = App::MFILE::WWW::init( %ARGS );
 die "\n" . $status->text unless $status->ok;
 
 print "Log messages will be written to " . $site->MFILE_WWW_LOG_FILE .  "\n";

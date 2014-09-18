@@ -2,13 +2,17 @@ NAME
     App::MFILE::WWW - Generic web front-end with demo app
 
 VERSION
-    Version 0.101
+    Version 0.103
 
 LICENSE
     This software is distributed under the "BSD 3-Clause" license, the text
     of which can be found in the file named `COPYING' in the top-level
     distro directory. The license text is also reprodued at the top of each
     source file.
+
+SYNOPSIS
+        $ man mfile-www
+        $ mfile-www
 
 DESCRIPTION
     This distro contains a generic framework for developing web front-ends
@@ -17,9 +21,8 @@ DESCRIPTION
     the application's "screens" are displayed), and "widgets" for defining
     the application's login dialog, menus, forms, and actions.
 
-    For illustration, the distro contains a demo app that authenticates
-    against App::Dochazka::REST and contains a single menu, a simple form,
-    and a sample action.
+    For illustration, the distro contains a demo app that contains a menu, a
+    submenu, a simple form, and a some sample actions.
 
 STACK
     The full stack of which App::MFILE::WWW is a part consists of the
@@ -63,8 +66,9 @@ DERIVED WWW CLIENTS
     "foundation" upon which derived clients can be written.
 
   Standalone operation
-    App::MFILE::WWW can be run as a standalone HTTP server. Authentication
-    is disabled by default, so no REST server is needed in this scenario.
+    App::MFILE::WWW can be run as a standalone HTTP server with a "demo
+    app", which is included in this distribution. Authentication is disabled
+    by default, so no REST server is needed in this scenario.
 
     Before a derived client can be written, the developer must first
     understand how App::MFILE::WWW is structured. This is easily understood
@@ -164,41 +168,27 @@ DERIVED WWW CLIENTS
     * the presence of the `--ddist' option triggers a special routine whose
     purpose is to ensure that the derived distro exists and that its
     sharedir is properly set up to work with App::MFILE::WWW:
-            =over
-
-            =item * error exit if the distro referred to by the C<--ddist> option
-            doesn't exist 
-
-            =item * error exit if the distro lacks a sharedir
-
-            =item * C<css> and C<js/core> need to exist and be symlinks to the same
-            directories in the L<App::MFILE::WWW> sharedir. If this is not the
-            case, the script displays a message asking the user to re-run the
-            script as root
-
-            =item * if already running as root, the symlinks are created and the
-            script displays a message asking to be re-run as a normal user
-
-            =item * once the symlinks are in place, the script runs some sanity
-            checks (mainly verifying the existence of certain files in their
-            expected places)
-
-            =back
+        * error exit if the distro referred to by the `--ddist' option
+        doesn't exist
+        * error exit if the distro lacks a sharedir
+        * `css' and `js/core' need to exist and be symlinks to the same
+        directories in the App::MFILE::WWW sharedir. If this is not the
+        case, the script displays a message asking the user to re-run the
+        script as root
+        * if already running as root, the symlinks are created and the
+        script displays a message asking to be re-run as a normal user
+        * once the symlinks are in place, the script runs some sanity checks
+        (mainly verifying the existence of certain files in their expected
+        places)
 
     * the script calls the `App::MFILE::WWW::init' routine, which loads the
     configuration parameters stored in the following places:
-            =over
-
-            =item * the L<App::MFILE::WWW> distro sharedir (under C<config/WWW_Config.pm>)
-
-            =item * the derived distro sharedir (also under C<config/WWW_Config.pm>)
-
-            =item * finally and optionally, if a sitedir was specified on the
-            command line -- for example C<--sitedir=/etc/dochazka-www> --,
-            configuration parameters are loaded from a file C<WWW_SiteConfig.pm> in
-            that directory, overriding the defaults
-
-            =back
+        * the App::MFILE::WWW distro sharedir (under `config/WWW_Config.pm')
+        * the derived distro sharedir (also under `config/WWW_Config.pm')
+        * finally and optionally, if a sitedir was specified on the command
+        line -- for example `--sitedir=/etc/dochazka-www' --, configuration
+        parameters are loaded from a file `WWW_SiteConfig.pm' in that
+        directory, overriding the defaults
 
     * the derived distro's configuration should override the MFILE_APPNAME
     parameter -- in our example, it could be set to 'dochazka-www'

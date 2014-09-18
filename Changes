@@ -643,3 +643,9 @@ Revision history for App::MFILE::WWW
 0.101  2014-09-18 08:48 CEST
 - js/: divide 'sampleAction' into three demo actions
 
+0.102  2014-09-18 12:33 CEST
+- bin/mfile-www: edit POD; make sitedir configurable and optional
+
+0.103  2014-09-18 15:12 CEST
+- minor POD fix
+

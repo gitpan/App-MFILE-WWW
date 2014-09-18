@@ -57,11 +57,11 @@
    "provides" : {
       "App::MFILE::WWW" : {
          "file" : "lib/App/MFILE/WWW.pm",
-         "version" : "0.101"
+         "version" : "0.103"
       },
       "App::MFILE::WWW::Resource" : {
          "file" : "lib/App/MFILE/WWW/Resource.pm",
-         "version" : "0.101"
+         "version" : "0.103"
       }
    },
    "release_status" : "stable",
@@ -70,5 +70,5 @@
          "http://opensource.org/licenses/BSD-3-Clause"
       ]
    },
-   "version" : "0.101"
+   "version" : "0.103"
 }

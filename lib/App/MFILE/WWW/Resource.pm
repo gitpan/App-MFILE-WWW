@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.101
+Version 0.103
 
 =cut
 
-our $VERSION = '0.101';
+our $VERSION = '0.103';
 
 
 
