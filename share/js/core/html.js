@@ -72,9 +72,19 @@ define ([
         },
         body: function () {
             var r = '',
-                cunick = currentUser.obj.nick || null,
-                cupriv = currentUser.priv || 'passerby',
-                nickToDisplay = cunick ? currentUser.obj.nick : '&lt;NONE&gt;';
+                cu = currentUser(),
+                cunick,
+                cupriv,
+                nickToDisplay;
+
+            if (cu) {
+                cunick = cu.obj.nick || null;
+                cupriv = cu.priv || 'passerby';
+            } else {
+                cunick = null;
+                cupriv = 'passerby';
+            }
+            nickToDisplay = cunick ? cu.obj.nick : '&lt;NONE&gt;';
             
             r += '<div class="abovebox">';
             r += '<p class="alignleft"><span style="font-size: 24px">';

@@ -65,14 +65,20 @@ define ([
 
         // check current employee's privilege against a given ACL profile
         privCheck: function (p) {
-            var cep = currentUser.priv;
-            if (p === 'passerby') {
+            var cep = currentUser('priv');
+            if ( ! cep ) {
+                //console.log("Something is wrong: cannot determine priv level of current user!");
+                return undefined;
+            } else {
+                //console.log('privCheck comparing ' + p + ' against ACL ' + cep);
+            }
+            if (p === 'passerby' && cep) {
                 return true;
             }
-            if (p === 'inactive' && cep !== 'passerby') {
+            if (p === 'inactive' && (cep === 'inactive' || cep === 'active' || cep === 'admin')) {
                 return true;
             }
-            if (p === 'active' && cep !== 'passerby' && cep !== 'inactive') {
+            if (p === 'active' && (cep === 'active' || cep === 'admin')) {
                 return true;
             }
             if (p === 'admin' && cep === 'admin') {

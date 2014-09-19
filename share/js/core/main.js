@@ -58,6 +58,7 @@ define ([
 ) {
 
     var dummy = Object.create(null),
+        cu,
         t;
 
     //
@@ -70,24 +71,22 @@ define ([
     //
     targetInit();
     t = target.pull('demoMenu');
-    console.log('Pulled target ', t);
 
     //
     // mode-specific setup
     //
     console.log( 'connectToRestServer is ' + cf('connectToRestServer') );
-    if ( cf('connectToRestServer') === 'false' ) {
-        console.log( "Standalone mode: setting nick to 'demo'" );
-        currentUser.obj.nick = 'demo';
-    } else {
+    if (cf('connectToRestServer')) {
         console.log( "Derived distribution mode" );
+    } else {
+        console.log( "Standalone mode" );
     }
 
     //
     // pass control to main menu or login dialog, as appropriate
     //
-    console.log( 'currentUser.obj.nick is ' + currentUser.obj.nick );
-    if (currentUser.obj.nick) {
+    cu = currentUser();
+    if (! cf('connectToRestServer') || cu) {
         t.start();
     } else {
         loginDialog();

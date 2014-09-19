@@ -37,18 +37,27 @@
 "use strict";
 
 define ([
+    'cf',
     'current-user'
 ], function (
+    cf,
     currentUser
 ) {
 
     return function () {
         test('currentUser object', function () {
-            ok(currentUser.hasOwnProperty('obj'), "currentUser.obj OK");
-            ok(currentUser.hasOwnProperty('priv'), "currentUser.priv OK");
-            ok(currentUser.obj.hasOwnProperty('nick'), "currentUser.obj.nick OK");
-            ok(currentUser.obj.hasOwnProperty('passhash'), "currentUser.obj.passhash OK");
-            ok(currentUser.obj.hasOwnProperty('salt'), "currentUser.obj.salt OK");
+
+            // if 'connectToRestServer is false, the current-user object should be empty
+            if (cf('connectToRestServer')) {
+                ok(currentUser().hasOwnProperty('obj'), "currentUser.obj OK");
+                ok(currentUser().hasOwnProperty('priv'), "currentUser.priv OK");
+                ok(currentUser().obj.hasOwnProperty('nick'), "currentUser.obj.nick OK");
+                ok(currentUser().obj.hasOwnProperty('passhash'), "currentUser.obj.passhash OK");
+                ok(currentUser().obj.hasOwnProperty('salt'), "currentUser.obj.salt OK");
+            } else {
+                strictEqual(currentUser(), null, "connectToRestServer is false");
+            }
+
         });
     };
 

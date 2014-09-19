@@ -649,3 +649,19 @@ Revision history for App::MFILE::WWW
 0.103  2014-09-18 15:12 CEST
 - minor POD fix
 
+0.104  2014-09-19 09:27 CEST
+- WWW.pm: move startup script-related POD to startup script
+- Resource.pm: clarify logic in 'is_authorized'
+- js/core/current-user.js: refactor, document
+- js/core/lib.js: refactor 'privCheck'
+- js/core/tests/current-user.js: test differently in standalone mode
+- js/core/tests/lib.js: adapt to changes in current-user.js
+- tickets: add some tickets
+
+0.105  2014-09-19 13:59 CEST
+- Resource.pm: do not use quotation marks when we send 'false/true' value
+  of META_WWW_CONNECT_TO_REST_SERVER to JavaScript side
+- js/: adapt to true/false value of cf('connectToRestServer'); deal with
+  current-user being null in standalone mode; make privCheck test use new
+  lib.privCheck "API"
+

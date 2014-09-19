@@ -36,9 +36,11 @@
 
 define ([
     'cf',
+    'current-user',
     'lib'
 ], function (
     cf,
+    currentUser,
     lib 
 ) {
     return function () {
@@ -61,27 +63,27 @@ define ([
         //
         // privCheck
         //
-        test('internal library functions: hairCut', function () {
-            cf("currentUserPriv", 'passerby');
-            strictEqual(cf("currentUserPriv"), 'passerby', "currentUserPriv override");
+        test('internal library functions: privCheck', function () {
+            currentUser('priv', 'passerby');
+            strictEqual(currentUser('priv'), 'passerby', "currentUserPriv override");
             equal(lib.privCheck('passerby'), true, "user passerby, ACL passerby");
             equal(lib.privCheck('inactive'), false, "user passerby, ACL inactive");
             equal(lib.privCheck('active'), false, "user passerby, ACL active");
             equal(lib.privCheck('admin'), false, "user passerby, ACL admin");
-            cf("currentUserPriv", 'inactive');
-            strictEqual(cf("currentUserPriv"), 'inactive', "currentUserPriv override");
+            currentUser('priv', 'inactive');
+            strictEqual(currentUser('priv'), 'inactive', "currentUserPriv override");
             equal(lib.privCheck('passerby'), true, "user inactive, ACL passerby");
             equal(lib.privCheck('inactive'), true, "user inactive, ACL inactive");
             equal(lib.privCheck('active'), false, "user inactive, ACL active");
             equal(lib.privCheck('admin'), false, "user inactive, ACL admin");
-            cf("currentUserPriv", 'active');
-            strictEqual(cf("currentUserPriv"), 'active', "currentUserPriv override");
+            currentUser('priv', 'active');
+            strictEqual(currentUser('priv'), 'active', "currentUserPriv override");
             equal(lib.privCheck('passerby'), true, "user active, ACL passerby");
             equal(lib.privCheck('inactive'), true, "user active, ACL inactive");
             equal(lib.privCheck('active'), true, "user active, ACL active");
             equal(lib.privCheck('admin'), false, "user active, ACL admin");
-            cf("currentUserPriv", 'admin');
-            strictEqual(cf("currentUserPriv"), 'admin', "currentUserPriv override");
+            currentUser('priv', 'admin');
+            strictEqual(currentUser('priv'), 'admin', "currentUserPriv override");
             equal(lib.privCheck('passerby'), true, "user admin, ACL passerby");
             equal(lib.privCheck('inactive'), true, "user admin, ACL inactive");
             equal(lib.privCheck('active'), true, "user admin, ACL active");

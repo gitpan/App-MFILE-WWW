@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.103
+Version 0.105
 
 =cut
 
-our $VERSION = '0.103';
+our $VERSION = '0.105';
 
 
 
@@ -233,13 +233,21 @@ sub is_authorized {
     #$log->debug( "the session is " . ( $yesno ? '' : 'not ' ) . "fresh" );
 
     #
+    # we are not to connect to REST server, so authorization is meaningless
+    #
+    if ( $meta->META_WWW_CONNECT_TO_REST_SERVER eq 'false' ) {
+        $log->debug( 'is_authorized: we are not to connect to REST server, so authorization is meaningless' );
+        $session->set('last_seen', time); 
+        return 1;
+    }
+
+    #
     # authorized session
     #
-    if ( $meta->META_WWW_CONNECT_TO_REST_SERVER eq 'false' or
-         ( $ce = $session->get('currentEmployee') and
-           $session->get('ip_addr') and 
-           $session->get('ip_addr') eq $remote_addr and
-           _is_fresh( $session ) ) )
+    if ( $ce = $session->get('currentEmployee') and
+         $session->get('ip_addr') and 
+         $session->get('ip_addr') eq $remote_addr and
+         _is_fresh( $session ) )
     {
         $log->debug( "is_authorized: Authorized session " . $session->id . " (" . $ce->{'nick'} . ")" );
         $session->set('last_seen', time); 
@@ -688,7 +696,7 @@ sub _require_js {
         $r .= 'appVersion: \'' . $VERSION . '\',';
 
         # connectToRestServer (false means "standalone mode")
-        $r .= 'connectToRestServer: \'' . $meta->META_WWW_CONNECT_TO_REST_SERVER . '\',';
+        $r .= 'connectToRestServer: ' . $meta->META_WWW_CONNECT_TO_REST_SERVER . ',';
 
         # currentEmployee 
         $r .= "currentUser: " . ( $ce ? to_json( $ce ) : 'null' ) . ',';

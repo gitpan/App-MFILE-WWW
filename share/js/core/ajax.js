@@ -56,12 +56,8 @@ define ([
     $,
     cf
 ) {
-    var rf;
-    if ( cf('connectToRestServer') === 'false' ) {
-        // we are not to connect to the REST server at all!
-        rf = function () {};
-    } else {
-        rf = function (mfao, scb, fcb) {
+
+    var rest_req = function (mfao, scb, fcb) {
             // mfao is 'MFILE AJAX Object'
             // scb is 'Success Call Back' 
             // fcb is 'Failure Call Back' 
@@ -93,6 +89,9 @@ define ([
                 }
             });
         };
+    if (cf('connectToRestServer')) {
+        return rest_req;
     }
-    return rf;
+    return function () {};
+
 });

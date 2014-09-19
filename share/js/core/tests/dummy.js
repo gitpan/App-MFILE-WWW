@@ -32,6 +32,8 @@
 //
 // tests/dummy.js
 //
+// demo unit test file
+//
 "use strict";
 
 define ([

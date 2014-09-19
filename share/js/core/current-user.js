@@ -30,13 +30,34 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// current-user.js - initialize and store currentUser object
+// current-user.js - initialize, store, and modify current user object and
+//                   priv level setting
 //
-// The currentUser object looks like this:
-// {
-//     'obj': currentUser object defined in 'module.config' (see Resource.pm)
-//     'priv': currentUserPriv string defined in 'module.config'
-// }
+// This module returns a function. When the module is first loaded, it creates
+// an empty 'prototypes.user' object (see prototypes.js) and merges it with
+// the value of the 'currentUser' module.config parameter (see Resource.pm), 
+// which may be empty. It also gets the value of the 'currentUserPriv' setting,
+// which also may be empty.
+//
+// The function provides a simple API that hinges on the value of the first
+// argument:
+//
+// - first argument === undefined
+//   the "full current-user object" is returned, i.e.:
+//   {
+//       obj: { nick: '...', passhash: '...', salt: '...', etc. },
+//       priv: 'passerby'
+//   }
+//
+//  - first argument === 'obj'
+//    the current user object only is returned. If there is a second argument,
+//    the object is set to that argument first.
+//
+//  - first argument === 'priv'
+//    the current user priv string only is returned. If there is a second argument,
+//    the priv string is set to that argument first.
+//
+//
 "use strict";
 
 define ([
@@ -49,6 +70,9 @@ define ([
     prototypes
 ) {
 
+    // Initialization routine (run only once but the variables are available
+    // to the current-user function and provide storage for the object it
+    // returns)
     var cu = Object.create(prototypes.user),
         ce = cf('currentUser'),
         priv = cf('currentUserPriv') || 'passerby';
@@ -56,10 +80,30 @@ define ([
     if (ce) {
         $.extend(cu, ce)
     }
-    console.log('Current user is ', cu);
-    return { 
-        'obj': cu,
-        'priv': priv,
+
+    // current-user function
+    return function (sw, arg) { 
+        if ( sw === 'obj') {
+            if (arg) {
+                console.log('NOTICE: setting current user object to ', arg);
+                cu = arg;
+            }
+            return cu;
+        }
+        if ( sw === 'priv') {
+            if (arg) {
+                console.log('NOTICE: setting current user priv to ' + arg);
+                priv = arg;
+            }
+            return priv;
+        }
+        if ( ! cf('connectToRestServer')) {
+            return null;
+        }
+        return {
+            'obj': cu,
+            'priv': priv,
+        };
     };
 
 });
