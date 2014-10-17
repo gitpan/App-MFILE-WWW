@@ -1,8 +1,8 @@
 NAME
-    App::MFILE::WWW - Generic web front-end with demo app
+    App::MFILE::WWW - Web UI development toolkit with prototype demo app
 
 VERSION
-    Version 0.105
+    Version 0.136
 
 LICENSE
     This software is distributed under the "BSD 3-Clause" license, the text
@@ -13,19 +13,54 @@ LICENSE
 SYNOPSIS
         $ man mfile-www
         $ mfile-www
+        $ firefox http://localhost:5001
 
 DESCRIPTION
-    This distro contains a generic framework for developing web front-ends
-    to REST resources. The framework consists of a web server based on Plack
-    and Web::Machine, CSS and HTML for the "app frame" (on-screen area where
-    the application's "screens" are displayed), and "widgets" for defining
-    the application's login dialog, menus, forms, and actions.
+    This distro contains a foundation/framework/toolkit for developing the
+    "front end" portion of web applications.
 
-    For illustration, the distro contains a demo app that contains a menu, a
-    submenu, a simple form, and a some sample actions.
+    App::MFILE::WWW is a Plack application that provides a HTTP
+    request-response handler (based on Web::Machine), CSS and HTML source
+    code for an in-browser "screen", and JavaScript code for displaying
+    various "widgets" (menus, forms, etc.) in that screen and for processing
+    user input from within those widgets.
 
-STACK
-    The full stack of which App::MFILE::WWW is a part consists of the
+    In addition, infrastructure is included (but need not be used) for user
+    authentication, session management, and communication with a backend
+    server via AJAX calls.
+
+    Front ends built with App::MFILE::WWW will typicaly be menu-driven,
+    consisting exclusively of fixed-width Unicode text, and capable of being
+    controlled from the keyboard, without the use of a mouse. The overall
+    look-and-feel is reminiscent of the text terminal era.
+
+    The distro comes with a prototype (demo) application to illustrate how
+    the various widgets are used.
+
+QUICK START (DEMO)
+    App::MFILE::WWW can be run as a standalone HTTP server providing a
+    self-contained demo application.
+
+    Assuming App::MFILE::WWW has been installed properly, this mode of
+    operation can be started by running `mfile-www', as a normal user (even
+    'nobody'), with no arguments or options:
+
+        $ mfile-www
+
+    The start-up script will write information about its state to the
+    standard output. This includes the location of its log file, the port
+    where the HTTP server is listening (default is 5001), etc. For a
+    detailed description of what happens when the start-up script is run,
+    see the POD of `mfile-www' itself - e.g. "man mfile-www".
+
+WRITING A DERIVED CLIENT
+    Now that you have the demo running, you probably want to roll up your
+    sleeves and start using this to write your own application. Now is a
+    good time to read about the basic architecture of applications based on
+    App::MFILE::WWW.
+
+  Stack
+    The full stack, of which App::MFILE::WWW is a part, consists of the
     following components:
 
     * Database engine
@@ -36,48 +71,30 @@ STACK
 
     * REST server
         A REST server, such as App::Dochazka::REST, implements a data model
-        and provides a HTTP interface to that model.
+        and provides an HTTP interface to that model.
 
     * optional CLI client/frontend
         An optional Command Line Interface (frontend) can provide a command
         line interface to the REST server.
 
     * WWW client/frontend
-        The WWW frontend, built based on this distro, is a web server that
+        The WWW frontend, built from this distro, is a web server that
         serves HTML, CSS, and JavaScript code to users to provide them with
         a menu-driven "browser experience" of the application.
 
-    Conceptually, the clients (frontends) act as proxies between the user
-    and the REST server. Taking this one step further, the REST server
-    itself is a proxy between the client and the database engine.
+    Conceptually, the frontends (or "clients") act as proxies between the
+    user and the REST server in this setup. Taking this one step further,
+    the REST server itself is a proxy between the client and the database
+    engine.
 
-    From a technical perspective, the strict separation between the REST
-    server and its clients makes the application as a whole more robust.
+    Strict separation between backend (REST server) and frontend (clients)
+    is a technical measure that makes the application as a whole more
+    robust.
 
 DERIVED WWW CLIENTS
-    The philosophy behind the stack design described above is that you, the
-    user, have the freedom and the flexibility to write your own client, on
-    any platform, in any language -- however you see fit. In other words,
-    you are not forced to use any particular client. Conceivably, you can
-    even communicate with the REST server without any client at all.
-
-    However, writing a client is time- and labor-intensive. Although
-    App::MFILE::WWW is capable of standalone operation, it is designed as a
-    "foundation" upon which derived clients can be written.
-
-  Standalone operation
-    App::MFILE::WWW can be run as a standalone HTTP server with a "demo
-    app", which is included in this distribution. Authentication is disabled
-    by default, so no REST server is needed in this scenario.
-
-    Before a derived client can be written, the developer must first
-    understand how App::MFILE::WWW is structured. This is easily understood
-    by examining how it works in standalone mode.
-
-    Assuming App::MFILE::WWW has been installed properly, it can be started
-    in standalone mode by running `mfile-www', as a normal user, with no
-    arguments or options. Here is a basic description of what happens in
-    this scenario:
+    When you write your own web frontend using this distro, from
+    App::MFILE::WWW's perspective it is a "derived client" and will be
+    reffered to as such in this document.
 
   Derived client operation
     In a derived-client scenario, App::MFILE::WWW is basically used as a
@@ -91,11 +108,12 @@ DERIVED WWW CLIENTS
     Where 'App-Dochazka-WWW' refers to the Perl module App::Dochazka::WWW,
     which is assumed to contain the derived client source code.
 
-    So, in the first place it is necessary to create such a Perl module. The
-    App::MFILE::WWW module can be used as a template. It should have a
-    sharedir configured and present.
+    So, in the first place it is necessary to create such a Perl module. It
+    should have a sharedir configured and present. One such derived client,
+    App::Dochazka::WWW, is available on CPAN.
 
-REQUEST-RESPONSE CYCLE
+IMPLEMENTATION DETAILS
+  HTTP request-response cycle
     The HTTP request-response cycle is implemented as follows:
 
     * nginx listens for incoming connections on port 80/443 of the server

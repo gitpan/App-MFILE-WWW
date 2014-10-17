@@ -75,7 +75,11 @@ define ([
     // returns)
     var cu = Object.create(prototypes.user),
         ce = cf('currentUser'),
-        priv = cf('currentUserPriv') || 'passerby';
+        priv = cf('currentUserPriv') || 'passerby',
+        flag1;
+
+    //console.log("current-user: ce is ", ce);
+    //console.log("current-user: currentUserPriv is " + priv);
 
     if (ce) {
         $.extend(cu, ce)
@@ -83,19 +87,27 @@ define ([
 
     // current-user function
     return function (sw, arg) { 
-        if ( sw === 'obj') {
+        if (sw === 'obj') {
             if (arg) {
                 console.log('NOTICE: setting current user object to ', arg);
                 cu = arg;
             }
-            return cu;
+            console.log('cu.nick is ' + cu.nick);
+            return cu.nick ? cu : null;
         }
-        if ( sw === 'priv') {
+        if (sw === 'priv') {
             if (arg) {
                 console.log('NOTICE: setting current user priv to ' + arg);
                 priv = arg;
             }
             return priv;
+        }
+        if (sw === 'flag1') {
+            if (arg || arg === 0) {
+                console.log('NOTICE: setting current user flag1 to ' + arg);
+                flag1 = arg;
+            }
+            return flag1;
         }
         if ( ! cf('connectToRestServer')) {
             return null;
@@ -103,6 +115,7 @@ define ([
         return {
             'obj': cu,
             'priv': priv,
+            'flag1': flag1
         };
     };
 

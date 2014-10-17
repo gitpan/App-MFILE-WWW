@@ -59,6 +59,7 @@ define ([
 
     var dummy = Object.create(null),
         cu,
+        main,
         t;
 
     //
@@ -67,10 +68,10 @@ define ([
     $(document.body).html(html.body());
 
     //
-    // initialize targets
+    // initialize targets, get main target and pull it
     //
-    targetInit();
-    t = target.pull('demoMenu');
+    main = targetInit();
+    t = target.pull(main);
 
     //
     // mode-specific setup
@@ -85,7 +86,8 @@ define ([
     //
     // pass control to main menu or login dialog, as appropriate
     //
-    cu = currentUser();
+    cu = currentUser('obj');
+    console.log('cu is ', cu);
     if (! cf('connectToRestServer') || cu) {
         t.start();
     } else {

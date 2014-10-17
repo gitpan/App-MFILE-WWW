@@ -30,33 +30,30 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// test.js
+// app/dnotice-init.js
 //
-// Unit testing script - runs routines in tests/ directory to set up 
-// unit tests and then called QUnit to load and start them, respectively
+// Round one of dnotice initialization - called from app/target-init.js
 //
 "use strict";
 
-require ([
-    'QUnit',
-    'tests/dummy',
-    'tests/cf',
-    'tests/current-user',
-    'tests/lib',
-    'tests/prototypes'
+define ([
+    'target'
 ], function (
-    qunit,
-    dummyTests,
-    cfTests,
-    currentUserTests,
-    libTests,
-    prototypeTests
+    target
 ) {
-    dummyTests();
-    cfTests();
-    currentUserTests();
-    libTests();
-    prototypeTests();
-    qunit.load();
-    qunit.start();
+
+    return function () {
+
+        target.push('demoNotice', {
+            'name': 'demoNotice',
+            'type': 'dnotice',
+            'menuText': 'Demo notice',
+            'title': 'Demo notice',
+            'preamble': 'This is just an illustration',
+            'aclProfile': 'passerby',
+            'back': 'demoMenu'
+        });
+
+    };
+
 });

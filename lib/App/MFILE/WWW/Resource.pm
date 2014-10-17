@@ -64,11 +64,11 @@ App::MFILE::WWW::Resource - HTTP request/response cycle
 
 =head1 VERSION
 
-Version 0.105
+Version 0.136
 
 =cut
 
-our $VERSION = '0.105';
+our $VERSION = '0.136';
 
 
 
@@ -144,7 +144,7 @@ sub _render_response_html {
     my $cepriv;
     if ( $ce ) {
         $cepriv = $ce->{'priv'} || '';
-        delete $ce->{'priv'};
+        #delete $ce->{'priv'};
         delete $ce->{'schedule'};
     }
     my $entity;
@@ -595,7 +595,7 @@ sub main_html {
     my $r = '<!DOCTYPE html><html>';
 
     $r .= '<head><meta charset="utf-8">';
-    $r .= "<title>App::Dochazka::WWW $VERSION</title>";
+    $r .= "<title>App::MFILE::WWW " . $meta->META_MFILE_APPVERSION . "</title>";
     $r .= '<link rel="stylesheet" type="text/css" href="/css/start.css" />';
 
     # Bring in RequireJS
@@ -626,7 +626,7 @@ sub test_html {
     
     $r = '<!DOCTYPE html><html>';
     $r .= '<head><meta charset="utf-8">';
-    $r .= "<title>Unit testing App::MFILE::WWW $VERSION</title>";
+    $r .= "<title>App::MFILE::WWW " . $meta->META_MFILE_APPVERSION . " (Unit testing)</title>";
     $r .= '<link rel="stylesheet" type="text/css" href="/css/qunit.css" />';
 
     # Bring in RequireJS
@@ -690,10 +690,10 @@ sub _require_js {
     # initialize configuration parameters that we need on JavaScript side
     $r .= 'requirejs.config({ config: {';
     $r .= '\'cf\': { ';
-    
+
         # appName, appVersion
         $r .= 'appName: \'' . $site->MFILE_APPNAME . '\',';
-        $r .= 'appVersion: \'' . $VERSION . '\',';
+        $r .= 'appVersion: \'' . $meta->META_MFILE_APPVERSION . '\',';
 
         # connectToRestServer (false means "standalone mode")
         $r .= 'connectToRestServer: ' . $meta->META_WWW_CONNECT_TO_REST_SERVER . ',';

@@ -51,18 +51,18 @@ use Params::Validate qw( :all );
 
 =head1 NAME
 
-App::MFILE::WWW - Generic web front-end with demo app
+App::MFILE::WWW - Web UI development toolkit with prototype demo app
 
 
 
 
 =head1 VERSION
 
-Version 0.105
+Version 0.136
 
 =cut
 
-our $VERSION = '0.105';
+our $VERSION = '0.136';
 
 
 
@@ -79,26 +79,65 @@ directory. The license text is also reprodued at the top of each source file.
 
     $ man mfile-www
     $ mfile-www
+    $ firefox http://localhost:5001
 
 
 
 =head1 DESCRIPTION
 
-This distro contains a generic framework for developing web front-ends to 
-REST resources. The framework consists of a web server based on Plack and
-L<Web::Machine>, CSS and HTML for the "app frame" (on-screen area where the
-application's "screens" are displayed), and "widgets" for defining the
-application's login dialog, menus, forms, and actions. 
+This distro contains a foundation/framework/toolkit for developing the "front
+end" portion of web applications. 
 
-For illustration, the distro contains a demo app that contains a menu, a
-submenu, a simple form, and a some sample actions.
+L<App::MFILE::WWW> is a L<Plack> application that provides a HTTP
+request-response handler (based on L<Web::Machine>), CSS and HTML source code
+for an in-browser "screen", and JavaScript code for displaying various
+"widgets" (menus, forms, etc.) in that screen and for processing user input
+from within those widgets.
+
+In addition, infrastructure is included (but need not be used) for user
+authentication, session management, and communication with a backend server via
+AJAX calls.
+
+Front ends built with L<App::MFILE::WWW> will typicaly be menu-driven,
+consisting exclusively of fixed-width Unicode text, and capable of being
+controlled from the keyboard, without the use of a mouse. The overall
+look-and-feel is reminiscent of the text terminal era.
+
+The distro comes with a prototype (demo) application to illustrate how the
+various widgets are used.
 
 
 
+=head1 QUICK START (DEMO)
 
-=head1 STACK
+L<App::MFILE::WWW> can be run as a standalone HTTP server providing a
+self-contained demo application.
 
-The full stack of which L<App::MFILE::WWW> is a part consists of the
+Assuming L<App::MFILE::WWW> has been installed properly, this mode of operation
+can be started by running C<mfile-www>, as a normal user (even 'nobody'), with
+no arguments or options:
+
+    $ mfile-www
+
+The start-up script will write information about its state to the standard
+output. This includes the location of its log file, the port where the HTTP
+server is listening (default is 5001), etc. For a detailed description of what
+happens when the start-up script is run, see the POD of C<mfile-www> itself
+- e.g. "man mfile-www".
+
+
+
+=head1 WRITING A DERIVED CLIENT
+
+Now that you have the demo running, you probably want to roll up your sleeves
+and start using this to write your own application. Now is a good time to read
+about the basic architecture of applications based on L<App::MFILE::WWW>.
+
+
+
+=head2 Stack
+
+The full stack, of which L<App::MFILE::WWW> is a part, consists of the
 following components:
 
 =over
@@ -114,7 +153,7 @@ For interfacing between the Perl code and the database engine.
 =item * REST server
 
 A REST server, such as L<App::Dochazka::REST>, implements a data model and
-provides a HTTP interface to that model.
+provides an HTTP interface to that model.
 
 =item * optional CLI client/frontend
 
@@ -123,48 +162,26 @@ interface to the REST server.
 
 =item * WWW client/frontend
 
-The WWW frontend, built based on this distro, is a web server that serves HTML,
+The WWW frontend, built from this distro, is a web server that serves HTML,
 CSS, and JavaScript code to users to provide them with a menu-driven "browser
 experience" of the application.
 
 =back
 
-Conceptually, the clients (frontends) act as proxies between the user and
-the REST server. Taking this one step further, the REST server itself is a
-proxy between the client and the database engine.
+Conceptually, the frontends (or "clients") act as proxies between the user and
+the REST server in this setup. Taking this one step further, the REST server
+itself is a proxy between the client and the database engine.
 
-From a technical perspective, the strict separation between the REST server
-and its clients makes the application as a whole more robust.
+Strict separation between backend (REST server) and frontend (clients) is a
+technical measure that makes the application as a whole more robust.
 
 
 
 =head1 DERIVED WWW CLIENTS
 
-The philosophy behind the stack design described above is that you, the
-user, have the freedom and the flexibility to write your own client, on any
-platform, in any language -- however you see fit. In other words, you are
-not forced to use any particular client. Conceivably, you can even
-communicate with the REST server without any client at all.
-
-However, writing a client is time- and labor-intensive. Although
-L<App::MFILE::WWW> is capable of standalone operation, it is designed as a
-"foundation" upon which derived clients can be written. 
-
-
-=head2 Standalone operation
-
-L<App::MFILE::WWW> can be run as a standalone HTTP server with a "demo
-app", which is included in this distribution. Authentication is disabled by
-default, so no REST server is needed in this scenario.
-
-Before a derived client can be written, the developer must first understand
-how L<App::MFILE::WWW> is structured. This is easily understood by
-examining how it works in standalone mode.
-
-Assuming L<App::MFILE::WWW> has been installed properly, it can be started
-in standalone mode by running C<mfile-www>, as a normal user, with no
-arguments or options. Here is a basic description of what happens in this
-scenario:
+When you write your own web frontend using this distro, from
+L<App::MFILE::WWW>'s perspective it is a "derived client" and will be reffered
+to as such in this document.
 
 
 =head2 Derived client operation
@@ -180,12 +197,15 @@ command-line option, i.e.
 Where 'App-Dochazka-WWW' refers to the Perl module L<App::Dochazka::WWW>,
 which is assumed to contain the derived client source code.
 
-So, in the first place it is necessary to create such a Perl module. The
-L<App::MFILE::WWW> module can be used as a template. It should have a
-sharedir configured and present.
+So, in the first place it is necessary to create such a Perl module.  It should
+have a sharedir configured and present. One such derived client,
+L<App::Dochazka::WWW>, is available on CPAN.
 
 
-=head1 REQUEST-RESPONSE CYCLE
+
+=head1 IMPLEMENTATION DETAILS
+
+=head2 HTTP request-response cycle
 
 The HTTP request-response cycle is implemented as follows:
 
@@ -329,6 +349,7 @@ configuration directories, and sets up logging.
 sub init {
     my %ARGS = validate( @_, { 
         mode => { type => SCALAR, optional => 1 }, # 'STANDALONE' or 'DDIST', defaults to 'STANDALONE'
+        ddist_sharedir => { type => SCALAR, optional => 1 },
         sitedir => { type => SCALAR, optional => 1 },
         debug_mode => { type => SCALAR, optional => 1 },
     } );
@@ -379,11 +400,20 @@ sub _load_config {
     $status = $CELL->load( sitedir => $target );
     return $status if $status->not_ok;
 
+    # if ddist_sharedir was given, attempt to load configuration from that, too
+    if ( $ARGS{ddist_sharedir} ) {
+        $target = File::Spec->catfile( $ARGS{ddist_sharedir}, 'config' );
+        $log->debug( "About to load App::MFILE::WWW configuration parameters from $target" );
+        $status = $CELL->load( sitedir => $target );
+        return $status if $status->not_ok;
+    }
+
     # load additional sitedir if provided by caller in argument list
     if ( $ARGS{sitedir} ) {
         $status = $CELL->load( sitedir => $ARGS{sitedir} );
         return $status if $status->not_ok;
     }
+
 
     return $CELL->status_ok;
 }

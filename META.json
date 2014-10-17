@@ -1,5 +1,5 @@
 {
-   "abstract" : "Generic web front-end with demo app",
+   "abstract" : "Web UI development toolkit with prototype demo app",
    "author" : [
       "Nathan Cutler <ncutler@suse.cz>"
    ],
@@ -57,11 +57,11 @@
    "provides" : {
       "App::MFILE::WWW" : {
          "file" : "lib/App/MFILE/WWW.pm",
-         "version" : "0.105"
+         "version" : "0.136"
       },
       "App::MFILE::WWW::Resource" : {
          "file" : "lib/App/MFILE/WWW/Resource.pm",
-         "version" : "0.105"
+         "version" : "0.136"
       }
    },
    "release_status" : "stable",
@@ -70,5 +70,5 @@
          "http://opensource.org/licenses/BSD-3-Clause"
       ]
    },
-   "version" : "0.105"
+   "version" : "0.136"
 }

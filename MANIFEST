@@ -18,9 +18,8 @@ share/js/000boilerplate.js
 share/js/core/ajax.js
 share/js/core/cf.js
 share/js/core/current-user.js
-share/js/core/dform-source-start.js
-share/js/core/dmenu-source-start.js
 share/js/core/html.js
+share/js/core/init2.js
 share/js/core/jquery-private.js
 share/js/core/jquery.js
 share/js/core/lib.js
@@ -30,6 +29,7 @@ share/js/core/main.js
 share/js/core/prototypes.js
 share/js/core/qunit.js
 share/js/core/require.js
+share/js/core/start.js
 share/js/core/target.js
 share/js/core/test.js
 share/js/core/tests/cf.js
@@ -39,8 +39,12 @@ share/js/core/tests/lib.js
 share/js/core/tests/prototypes.js
 share/js/mfile-www/daction-init.js
 share/js/mfile-www/daction-start.js
+share/js/mfile-www/dbrowser-init.js
 share/js/mfile-www/dform-init.js
 share/js/mfile-www/dmenu-init.js
+share/js/mfile-www/dnotice-hooks.js
+share/js/mfile-www/dnotice-init.js
+share/js/mfile-www/lib.js
 share/js/mfile-www/target-init.js
 t/00-load.t
 t/boilerplate.t

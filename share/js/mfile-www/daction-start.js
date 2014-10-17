@@ -30,7 +30,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// mfile-www/daction-start.js
+// app/daction-start.js
 //
 // daction 'start' method definitions
 //
@@ -44,11 +44,13 @@ define ([
     "jquery",
     "html",
     "logout",
+    "start",
     "target"
 ], function (
     $,
     html,
     logout,
+    start,
     target
 ) {
 
@@ -64,6 +66,10 @@ define ([
                 setTimeout(function () { 
                         target.pull('demoSubmenu').start(); 
                     }, 1500);
+            },
+            "returnToBrowser": function () { 
+                console.log("Now in returnToBrowser daction");
+                start.dbrowser(); 
             },
             "logout": logout
         };

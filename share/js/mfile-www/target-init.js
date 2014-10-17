@@ -30,7 +30,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// mfile-www/target-init
+// app/target-init
 //
 // Initialization of targets (round one)
 //
@@ -41,15 +41,17 @@ define ([
     'app/daction-init',
     'app/dform-init',
     'app/dmenu-init',
-    'dform-source-start',
-    'dmenu-source-start'
+    'app/dbrowser-init',
+    'app/dnotice-init',
+    'init2'
 ], function (
     target,
     dactionInitRoundOne,
     dformInitRoundOne,
     dmenuInitRoundOne,
-    dformInitRoundTwo,
-    dmenuInitRoundTwo
+    dbrowserInitRoundOne,
+    dnoticeInitRoundOne,
+    initRoundTwo
 ) {
 
     return function () {
@@ -60,12 +62,18 @@ define ([
         dactionInitRoundOne();
         dformInitRoundOne();
         dmenuInitRoundOne();
+        dbrowserInitRoundOne();
+        dnoticeInitRoundOne();
 
         // round two - add 'source' and 'start' properties
-        // (dform and dmenu only)
-        dformInitRoundTwo();
-        dmenuInitRoundTwo();
+        // (widget targets only)
+        initRoundTwo('dform');
+        initRoundTwo('dmenu');
+        initRoundTwo('dbrowser');
+        initRoundTwo('dnotice');
 
+        // return name of target to be called first (in main.js)
+        return 'demoMenu';
     };
 
 });

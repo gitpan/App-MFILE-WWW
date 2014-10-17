@@ -30,15 +30,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// app/dform.js
+// app/dform-init.js
 //
 // Round one of dform initialization (called from app/target-init)
 //
 "use strict";
 
 define ([
+    'lib',
     'target'
 ], function (
+    lib,
     target
 ) {
 
@@ -65,6 +67,24 @@ define ([
             text: 'RW Entry 1',
             prop: 'rwentry1',
             maxlen: 20
+        },
+
+        // demoEditFromBrowser
+        'RWprop1': {
+            name: 'RWProp1',
+            aclProfileRead: 'passerby',
+            aclProfileWrite: 'passerby',
+            text: 'prop1',
+            prop: 'prop1',
+            maxlen: 20
+        },
+        'RWprop2': {
+            name: 'RWProp2',
+            aclProfileRead: 'passerby',
+            aclProfileWrite: 'passerby',
+            text: 'prop2',
+            prop: 'prop2',
+            maxlen: 20
         }
 
     };
@@ -82,7 +102,7 @@ define ([
             'aclProfile': 'passerby',
             'entriesRead': [ entries.ROFormEntry1 ],
             'entriesWrite': [ entries.RWFormEntry1 ],
-            'hookGetObj': function () {
+            'hook': function () {
                 return {
                     roentry1: 'Some information here',
                     rwentry1: null
@@ -92,7 +112,22 @@ define ([
                 entries: ['demoActionFromForm'],
                 back: ['Back', 'demoSubmenu']
             }
+        });
 
+        target.push('demoEditFromBrowser', {
+            'name': 'demoEditFromBrowser',
+            'type': 'dform',
+            'menuText': 'Edit',
+            'title': 'Demo edit from browser',
+            'preamble': 'This is just an illustration',
+            'aclProfile': 'passerby',
+            'entriesRead': null,
+            'entriesWrite': [ entries.RWprop1, entries.RWprop2 ],
+            'hook': lib.holdObject,
+            'miniMenu': {
+                entries: ['demoActionFromForm'],
+                back: ['Back', 'returnToBrowser']
+            }
         });
 
     };

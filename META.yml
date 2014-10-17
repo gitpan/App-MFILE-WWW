@@ -1,5 +1,5 @@
 ---
-abstract: 'Generic web front-end with demo app'
+abstract: 'Web UI development toolkit with prototype demo app'
 author:
   - 'Nathan Cutler <ncutler@suse.cz>'
 build_requires:
@@ -23,10 +23,10 @@ name: App-MFILE-WWW
 provides:
   App::MFILE::WWW:
     file: lib/App/MFILE/WWW.pm
-    version: '0.105'
+    version: '0.136'
   App::MFILE::WWW::Resource:
     file: lib/App/MFILE/WWW/Resource.pm
-    version: '0.105'
+    version: '0.136'
 requires:
   App::CELL: '0.194'
   App::MFILE: '0.17'
@@ -48,4 +48,4 @@ requires:
   perl: '5.012'
 resources:
   license: http://opensource.org/licenses/BSD-3-Clause
-version: '0.105'
+version: '0.136'

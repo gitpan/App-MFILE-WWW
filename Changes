@@ -665,3 +665,141 @@ Revision history for App::MFILE::WWW
   current-user being null in standalone mode; make privCheck test use new
   lib.privCheck "API"
 
+0.106  2014-09-19 17:25 CEST
+- add initialization code for derived distribution mode
+
+0.107  2014-09-19 18:10 CEST
+- bin/mfile-www: fix various oversights
+- current_user.js: make 'obj' switch return null if there is no nick
+- main.js: fix derived distribution mode
+- status: server starts in ddist mode, login dialog is displayed
+
+0.108  2014-09-20 08:20 CEST
+- make target-init return name of target to be called first (by main.js)
+
+0.109  2014-09-20 22:53 CEST
+- lib.js: clean up deprecated constructor functions
+
+0.110  2014-09-21 00:33 CEST
+- bin/mfile-www, Resource.pm: add code to get the right version string so we
+  don't display App::MFILE::WWW version in derived distro mode
+
+0.111  2014-09-22 21:02 CEST
+- Resource.pm: fix bug "App::MFILE::WWW version number in HTML title, but 
+  in derived distribution mode the version number should be that of the
+  derived distribution"
+
+0.112  2014-09-24 10:19 CEST
+- js/core/dform-source-start.js: fix two bugs relating to how miniMenu length
+  is determined
+
+0.113  2014-09-24 11:53 CEST
+- Resource.pm: fix bug "privilege reverts to passerby on page reload"
+
+0.114  2014-09-24 13:47 CEST
+- do the right thing when user hits ENTER at a menu or miniMenu
+
+0.115  2014-09-24 15:27 CEST
+- js/: two minor clarifications
+
+0.116  2014-09-25 10:29 CEST
+- WWW.pm: massage POD
+
+0.117  2014-09-27 10:53 CEST
+- js/: start refactor in preparation for adding new 'browser' widget
+
+0.118  2014-10-03 12:46 CEST
+- ajax.js: expand commentary
+- js/: start work on 'dbrowser' widget (target type)
+
+0.119  2014-10-06 08:13 CEST
+- html.js: first shot at dbrowser HTML generator; modularize some snippets of
+  code
+
+0.120  2014-10-10 12:05 CEST
+- js/: debug latest round of changes
+- NEXT: start testing dbrowser functionality
+
+0.121  2014-10-10 17:01 CEST
+- js/: work on dbrowser (progress)
+
+0.122  2014-10-11 14:53 CEST
+- lib.js: add 'holdObject' routine
+- start.js: add 'dbrowserSubmit' routine; when dbrowsing, use 'lib.holdObject'
+  to store the current object so we can return to it
+- dform-init.js: start work on a 'demoEditFromBrowser' target
+
+0.123  2014-10-11 17:15 CEST
+- start.js: add warning about argument passed by dform handler to start
+  method of item picked from the dform miniMenu; store dbrowser state in a
+  descriptively-named object; rewrite dbrowser method to enable it to be
+  called either with an argument ("new" dbrowser) or without (return to
+  existing dbrowser state)
+- daction-{init,start}.js: add 'returnToBrowser' action for returning to
+  the saved dbrowser state
+- dform-init.js: make the 'Back' miniMenu selection in 'demoEditFromBrowser' 
+  call the 'returnToBrowser' target
+
+0.124  2014-10-11 19:34 CEST
+- dbrowser-init.js: use lib.holdObject for the hook and store the sample
+  result set there before initializing the target
+
+0.125  2014-10-11 20:34 CEST
+- html.js: add comment; remove useless arguments from 'dbrowser' function
+  declaration
+- lib.js: add comment
+- start.js: fix bug "start.dbrowser not reinitializing state"; add comments
+
+0.126  2014-10-11 21:57 CEST
+- current-user.js: add flag1 property, which we will use to store
+  masquerade state but which could be used for anything
+- html.js: fill 'userbox' element from app/lib.js
+- mfile-www/lib.js: new module with one method so far: 'fillUserBox' (based
+  on code that used to be in html.js)
+
+0.127  2014-10-11 22:39 CEST
+- start.css: change 'dbstatus' to 'noticesline'
+- html.js: add notices line to body HTML
+- mfile-www/app.js: add 'fillNoticesLine' method
+
+0.128  2014-10-11 23:13 CEST
+- start.js: notify console log and clear 'result' element whenever a dmenu,
+  dform, or dbrowser is started
+
+0.129  2014-10-13 15:25 CEST
+- WWW.pm: work on POD
+- core/html.js, css/start.css: rework CSS code in light of
+  http://stackoverflow.com/questions/26339186/different-font-sizes-and-justifications-on-a-single-line
+  and get rid of several deprecated classes
+- mfile-www/lib.js: tweak notices line
+
+0.130  2014-10-13 15:52 CEST
+- start.css: fix bug "#result element has fixed height, causing text to
+  overflow the border whenever more than one line is displayed"
+- core/ajax.js: display '* * * Communicating with REST server * * *' in the
+  #result line before each AJAX call
+- lib.js: add 'clearResult' library function
+- star.js: use 'clearResult' library function
+
+0.131  2014-10-13 16:47 CEST
+- js/: CSS tweaks
+
+0.132  2014-10-13 17:53 CEST
+- core/lib.js: stop logging every keypress
+- core/start.js: move miniMenu keyhandler into its own routine, thereby
+  eliminating some code duplication and preparing the code for a 'dnotice'
+  target type 
+
+0.133  2014-10-14 08:41 CEST
+- js/: implement dnotice feature
+
+0.134  2014-10-14 09:20 CEST
+- js/: fix bug "privHistory dnotice: race condition in AJAX call"
+
+0.135  2014-10-14 09:32 CEST
+- core/html.js: put dnotice in a <div> instead of a <form>
+
+0.136  2014-10-14 10:58 CEST
+- mfile-www/dnotice-hooks.js: make demoNotice display a random number to
+  illustrate that noticeText is generated at runtime
+

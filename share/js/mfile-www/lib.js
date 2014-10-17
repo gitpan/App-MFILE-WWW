@@ -30,65 +30,77 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// app/daction-init.js
+// app/lib.js
 //
-// Round one of daction initialization - called from app/target-init.js
+// application-specific routines
 //
 "use strict";
 
 define ([
-    'target',
-    'app/daction-start',
+    'current-user'
 ], function (
-    target,
-    dactionStart
+    currentUser
 ) {
 
-    return function () {
+    return {
 
         //
-        // demo dactions that can safely be deleted after making sure they
-        // aren't mentioned anywhere in your app-specific code
+        // function returns string to be displayed in the 'userbox'
+        // <span> element at the top right of the "screen" (i.e. browser
+        // window) -- called from html.js
         //
-        target.push('demoActionFromMenu', {
-            'name': 'demoActionFromMenu',
-            'type': 'daction',
-            'menuText': 'Do something from main menu',
-            'aclProfile': 'passerby',
-            'start': dactionStart('demoActionFromMenu')
-        }),
-        target.push('demoActionFromSubmenu', {
-            'name': 'demoActionFromSubmenu',
-            'type': 'daction',
-            'menuText': 'Do something from submenu',
-            'aclProfile': 'passerby',
-            'start': dactionStart('demoActionFromSubmenu')
-        }),
-        target.push('demoActionFromForm', {
-            'name': 'demoActionFromForm',
-            'type': 'daction',
-            'menuText': 'Action!',
-            'aclProfile': 'passerby',
-            'start': dactionStart('demoActionFromSubmenu')
-        }),
-        //
-        // dactions that you will probably want to use in your app
-        //
-        target.push('returnToBrowser', {
-            'name': 'returnToBrowser',
-            'type': 'daction',
-            'menuText': 'Return to browser',
-            'aclProfile': 'passerby',
-            'start': dactionStart('returnToBrowser')
-        }),
-        target.push('logout', {
-            'name': 'logout',
-            'type': 'daction',
-            'menuText': 'Logout',
-            'aclProfile': 'passerby',
-            'start': dactionStart('logout')
-        })
+        fillUserBox: function () {
+
+            var r = '', 
+                cu = currentUser(),
+                cunick,
+                cupriv,
+                cumasq;
+
+            if (cu) {
+                cunick = cu.obj.nick || null;
+                cupriv = cu.priv || 'passerby';
+                cumasq = cu.flag1; // use flag1 as masquerade state
+            } else {
+                cunick = null;
+                cupriv = 'passerby';
+                cumasq = undefined;
+            }
+
+            if (cumasq) {
+                r += '<b>!!! ';
+            }
+
+            r += 'Employee: ';
+            r += cunick ? cu.obj.nick : '&lt;NONE&gt;';
+            if (cumasq) {
+                r += '(MASQUERADE)';
+            } else {
+                if (cupriv === 'admin') {
+                    r += '&nbsp;ADMIN';
+                }
+            }
+
+            if (cumasq) {
+                r += ' !!!</b>';
+            }
+
+            return r;
+
+        },
+
+        //  
+        // function returns string that will be displayed at the very
+        // bottom of the screen (directly under the frame)
+        //  
+        fillNoticesLine: function () {
+            var r = '';
+            r += 'Copyright \u00A9 SUSE LLC, 2014.  All rights reserved.  ';
+            r += 'Report bugs at ';
+            r += '<a href="http://sourceforge.net/p/mfile/tickets/new/">';
+            r += 'http://sourceforge.net/p/mfile/tickets/new/</a>';
+            return r;
+        }   
 
     };
-
 });

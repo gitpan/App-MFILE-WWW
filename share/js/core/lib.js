@@ -35,14 +35,34 @@
 "use strict";
 
 define ([
+    'jquery',
     'current-user',
     'prototypes'
 ], function (
+    $,
     currentUser,
     prototypes
 ) {
 
+    var heldObject = null;
+
     return {
+
+        // clear the result line
+        clearResult: function () {
+            $('#result').css('text-align', 'left');
+            $('#result').html('&nbsp;');
+        },
+
+        // given an object, hold (store) it
+        // if called without argument, just return whatever object we are holding
+        holdObject: function (obj) {
+            if (obj) {
+                console.log("Setting held object to ", obj);
+                heldObject = obj;
+            }
+            return heldObject;
+        },
 
         // give object a "haircut" by throwing out all properties
         // that do not appear in proplist
@@ -59,8 +79,8 @@ define ([
         },
 
         // log events to browser JavaScript console
-        logKeyPress: function (event) {
-            console.log("WHICH: " + event.which + ", KEYCODE: " + event.keyCode);
+        logKeyPress: function (evt) {
+            // console.log("WHICH: " + evt.which + ", KEYCODE: " + evt.keyCode);
         },
 
         // check current employee's privilege against a given ACL profile
@@ -92,51 +112,6 @@ define ([
             var sp = '&nbsp;',
                 padSpaces = sp.repeat(padto - String(strToPad).length);
             return strToPad.concat(padSpaces);
-        },
-
-        // constructor for dmenu objects - used in dmenu.js and app/dmenu.js
-        dmenuConstructor: function (args) {
-            var r = Object.create(prototypes.target);
-            r.name = args.name;
-            r.menuText = args.menuText;
-            r.title = args.title;
-            r.get_title = function () { return this.title; };
-            r.aclProfile = args.aclProfile;
-            return r;
-        },
-
-        // constructor for dform objects - used in dform.js and app/dform.js
-        dformConstructor: function (args) {
-            var r = Object.create(prototypes.target);
-            r.name = args.name;
-            r.menuText = args.menuText;
-            r.title = args.title;
-            r.get_title = function () { return this.title; };
-            r.preamble = args.preamble;
-            r.get_title = function () { return this.preamble; };
-            r.aclProfile = args.aclProfile;
-            r.entriesRead = args.entriesRead;
-            r.get_entriesRead = function () { return this.entriesRead; };
-            r.entriesWrite = args.entriesWrite;
-            r.get_entriesWrite = function () { return this.entriesWrite; };
-            if (args.hasOwnProperty('hookGetObj') && typeof args.hookGetObj === 'function') {
-                r.hookGetObj = args.hookGetObj;
-            } else {
-                r.hookGetObj = function () { return null; };
-            }
-            return r;
-        },
-
-        // constructor for daction objects - used in daction.js and app/daction.js
-        dactionConstructor: function (args) {
-            var r = Object.create(prototypes.target);
-            r.name = args.name;
-            r.menuText = args.menuText;
-            r.aclProfile = args.aclProfile;
-            if (args.hasOwnProperty('start') && typeof args.start === 'function') {
-                r.start = args.start;
-            }
-            return r;
         }
 
     };

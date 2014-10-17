@@ -30,33 +30,31 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// test.js
+// app/dnotice-hooks.js
 //
-// Unit testing script - runs routines in tests/ directory to set up 
-// unit tests and then called QUnit to load and start them, respectively
+// Hooks for dnotices
 //
 "use strict";
 
-require ([
-    'QUnit',
-    'tests/dummy',
-    'tests/cf',
-    'tests/current-user',
-    'tests/lib',
-    'tests/prototypes'
+define ([
+    'jquery',
+    'target'
 ], function (
-    qunit,
-    dummyTests,
-    cfTests,
-    currentUserTests,
-    libTests,
-    prototypeTests
+    $,
+    target
 ) {
-    dummyTests();
-    cfTests();
-    currentUserTests();
-    libTests();
-    prototypeTests();
-    qunit.load();
-    qunit.start();
+
+    // return an object the property names of which correspond to the
+    // dnotice names and the values of which are hook functions called
+    // from start.js
+    return {
+
+        'demoNotice': function () {
+            var nt = 'Random number of the day ' + Math.random() + ' WOW!';
+            console.log("Generated demoNotice text '" + nt + "'");
+            $("#noticeText").html(nt);
+        }
+
+    };
+
 });

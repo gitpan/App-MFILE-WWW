@@ -39,14 +39,15 @@ use 5.014;
 use strict;
 use warnings;
 
-#use App::CELL::Test::LogToFile # uncomment this line to debug initialization
-use App::CELL qw( $site );
+#use App::CELL::Test::LogToFile; # uncomment this line to debug initialization
+use App::CELL qw( $meta $site );
 use App::CELL::Util qw( is_directory_viable );
 use App::MFILE::WWW;
 use Getopt::Long;
 use File::Path;
 use File::ShareDir;
 use File::Spec;
+use Module::Load;
 use Plack::Builder;
 use Plack::Runner;
 use Try::Tiny;
@@ -64,11 +65,11 @@ mfile-www - App::MFILE::WWW server startup script
 
 =head1 VERSION
 
-Version 0.105
+Version 0.136
 
 =cut
 
-our $VERSION = '0.105';
+our $VERSION = '0.136';
 
 
 
@@ -413,6 +414,15 @@ print "\nInitializing...\n";
 # prepare arguments for the call to App::MFILE::WWW::init
 #
 my %ARGS = ( debug_mode => 1 );
+if ( $ddist and $ddist_sharedir ) {
+    $ARGS{mode} = 'DDIST';
+    if ( is_directory_viable( $ddist_sharedir ) ) {
+        print "Derived distribution $ddist has a viable sharedir $ddist_sharedir; passing it to App::MFILE::WWW init routine\n";
+        $ARGS{ddist_sharedir} = $ddist_sharedir;
+    } else {
+        print "WARNING: problem with derived distribution $ddist sharedir $ddist_sharedir\n";
+    }
+}
 if ( $sitedir ) {
     if ( is_directory_viable( $sitedir) ) {
         print "Sitedir $sitedir is viable; passing it to App::MFILE::WWW init routine\n";
@@ -425,10 +435,25 @@ if ( $sitedir ) {
 my $status = App::MFILE::WWW::init( %ARGS );
 die "\n" . $status->text unless $status->ok;
 
+print "Application is " . $site->MFILE_APPNAME . "\n";
+
+#
+# get the right version string -- the interesting thing here is that this works
+# even if $ddist is set to the empty string!
+#
+my $ddist_with_colons = $ddist;
+my $ddist_version;
+$ddist_with_colons =~ s/-/::/g;
+load $ddist_with_colons;
+{
+    no strict 'refs';
+    $ddist_version = ${ $ddist_with_colons . '::VERSION' };
+}
+$meta->set('META_MFILE_APPVERSION', $ddist_version);
+
+print "Version is " . $meta->META_MFILE_APPVERSION . "\n";
 print "Log messages will be written to " . $site->MFILE_WWW_LOG_FILE .  "\n";
-
 print "JS and CSS files will be served from $http_root\n";
-
 print "Starting server\n";
 
 my $runner = Plack::Runner->new;

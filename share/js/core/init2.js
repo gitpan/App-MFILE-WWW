@@ -30,33 +30,40 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ************************************************************************* 
 //
-// test.js
+// init2.js
 //
-// Unit testing script - runs routines in tests/ directory to set up 
-// unit tests and then called QUnit to load and start them, respectively
+// second round of target initialization: add 'source' property and 'start'
+// method to all targets that need them
+//
+// (first round initialization module is in app/)
 //
 "use strict";
 
-require ([
-    'QUnit',
-    'tests/dummy',
-    'tests/cf',
-    'tests/current-user',
-    'tests/lib',
-    'tests/prototypes'
+define([
+    'html',
+    'start',
+    'target'
 ], function (
-    qunit,
-    dummyTests,
-    cfTests,
-    currentUserTests,
-    libTests,
-    prototypeTests
+    html,
+    start,
+    target
 ) {
-    dummyTests();
-    cfTests();
-    currentUserTests();
-    libTests();
-    prototypeTests();
-    qunit.load();
-    qunit.start();
+
+    return function (wtype) {
+
+        var i,
+            widgets;
+    
+        // iterate over certain types of target objects, adding 'source' and 'start' to each
+
+        widgets = target.getAll(wtype);
+        for (i in widgets ) {
+            if (widgets.hasOwnProperty(i)) {
+                widgets[i].source = html[wtype](i);
+                widgets[i].start = start[wtype](i);
+            }
+        }
+
+    };
+
 });

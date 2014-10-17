@@ -52,7 +52,6 @@ define ([
 
         var submitCallback = function (event) {
             event.preventDefault();
-            $('#result').html('Verifying credentials - this might take a second or two');
             var rest = {
                     "method": 'LOGIN',
                     "path": 'login',
